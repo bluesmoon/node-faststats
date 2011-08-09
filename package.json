@@ -1,0 +1,11 @@
+{
+	"name"        :  "fast-stats",
+	"version"     :  "0.0.1",
+        "description" :  "Quickly calculate common statistics on lists of numbers",
+	"keywords"    :  ["statistics", "statistic", "gauss", "lognormal", "normal", "mean", "median", "mode", "standard deviation", "margin of error", "iqr", "quartile", "inter quartile range"],
+	"homepage"    :  "https://github.com/bluesmoon/node-faststats",
+	"author"      :  "Philip Tellis <philip@bluesmoon.info> (http://bluesmoon.info/)",
+	"main"        :  "faststats.js",
+	"repository"  :  { "type": "git", "url": "git://github.com/bluesmoon/node-faststats.git" }
+}
+
