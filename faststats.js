@@ -1,8 +1,5 @@
 /*
 Note that if your data is too large, there _will_ be overflow.
-
-TODO:
-	filtering: iqr, band-pass
 */
 
 
@@ -120,8 +117,12 @@ Stats.prototype = {
 
 		if(p <=  0)
 			return this._data_sorted[0];
+		if(p == 25)
+			return (this._data_sorted[Math.floor((this.length-1)*0.25)] + this._data_sorted[Math.ceil((this.length-1)*0.25)])/2;
 		if(p == 50)
 			return this.median();
+		if(p == 75)
+			return (this._data_sorted[Math.floor((this.length-1)*0.75)] + this._data_sorted[Math.ceil((this.length-1)*0.75)])/2;
 		if(p >= 100)
 			return this._data_sorted[this.length-1];
 
@@ -142,6 +143,35 @@ Stats.prototype = {
 		}
 
 		return this._q2;
+	},
+
+	iqr: function() {
+		var q1, q3, fw;
+
+		q1 = this.percentile(25);
+		q3 = this.percentile(75);
+	
+		fw = (q3-q1)*1.5;
+	
+		return this.band_pass(q1-fw, q3+fw, true);
+	},
+
+	band_pass: function(low, high, open) {
+		var i, b=new Stats();
+
+		if(this.length === 0)
+			return new Stats();
+
+		if(this._data_sorted === null)
+			this._data_sorted = this.data.sort();
+
+		for(i=0; i<this.length && (this._data_sorted[i] < high || (!open && this._data_sorted[i] === high)); i++) {
+			if(this._data_sorted[i] > low || (!open && this._data_sorted[i] === low)) {
+				b.push(this._data_sorted[i]);
+			}
+		}
+
+		return b;
 	}
 };
 
