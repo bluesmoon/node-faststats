@@ -35,6 +35,7 @@ Stats.prototype = {
 		this._amean = null;
 		this._gmean = null;
 		this._stddev = null;
+		this._gstddev = null;
 		this._moe = null;
 		this._data_sorted = null;
 	},
@@ -134,7 +135,7 @@ Stats.prototype = {
 		if(this._gstddev === null)
 			this._gstddev = Math.exp(Math.sqrt(this.length * this.sum_of_square_of_logs - this.sum_of_logs*this.sum_of_logs)/this.length);
 
-		return this._stddev;
+		return this._gstddev;
 	},
 
 	moe: function() {
