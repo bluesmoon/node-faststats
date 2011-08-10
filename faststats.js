@@ -222,7 +222,7 @@ Stats.prototype.μ=Stats.prototype.amean;
 
 exports.Stats = Stats;
 
-if(process.argv[1].match(__filename)) {
+if(process.argv[1] && process.argv[1].match(__filename)) {
 	var s = new Stats(1, 2, 3);
 	var l = process.argv.slice(2);
 	if(!l.length) l = [10, 11, 15, 8, 13, 12, 19, 32, 17, 16];
