@@ -132,7 +132,8 @@ It also implements a percentile method to get at any percentile of the data.
 #### Arithmetic Mean
 
 The arithmetic mean is calculated as the sum of all data points divided by the number of data points.  This is useful
-for data sets that are fairly uniform, following a linear or binomial distribution.  Use the `amean()` method to get at it:
+for data sets that are fairly uniform, following a linear or binomial distribution.  Use the `amean()` method or the `μ()`
+method to get at it:
 
 ```javascript
 var a = s1.amean();
@@ -248,6 +249,57 @@ arithmetic mean of 4.67.  We could use this to find out the percent error in our
 
 The margin of error is inversely proportional to the square root of the number of data points, so increasing the
 size of your sample will reduce the margin of error.  It is good to strive for a margin of error of less than 5%.
+
+### Data filtering
+
+When dealing with statistical samples, it may be necessary to filter the dataset to get rid of outliers.  Sometimes
+an outlier is fairly obvious, and you can specify an upper and lower limit for it.   At other times, outliers are
+only apparent when looking at the rest of the dataset.  Inter-Quartile-Range filtering is useful to filter out these
+kinds of data sets.
+
+#### Band-pass filtering
+
+The `band_pass()` filter method returns a new `Stats` object with all its data points within the specified range.
+This method takes in three arguments.  The first is the lower bound of the range, the second is the upper bound
+of the range.  Both these arguments are required.
+
+The third argument specifies whether the range is open or closed.  An open range does not include the upper and
+lower bounds while a closed range includes them.  If not specified (or set to `false`), the range is closed.  If
+set to `true` the range is open.
+
+```javascript
+var s5 = s1.band_pass(3, 8);
+var r = s5.range();
+
+assert.equal(r[0], 3);
+assert.equal(r[1], 8);
+
+s5 = s1.band_pass(3, 8, true);
+r = s5.range();
+
+assert.equal(r[0], 4);
+assert.equal(r[1], 4);
+```
+
+Band pass filtering should be used if the range for your data is rigid and never changes.
+
+#### IQR Filtering
+
+IQR, or Inter Quartile Range filtering filters data based on the spread of the data.  It is much more adaptive to
+changes in data ranges.  Use the `iqr()` method to IQR filter a dataset.  The `iqr()` method does not accept
+any arguments.
+
+
+```javascript
+var s6 = s1.iqr();
+r = s6.range();
+
+assert.equal(r[0], 1);
+assert.equal(r[1], 10);
+```
+
+In some cases, IQR filtering may not filter out anything.  This can happen if the acceptable range is wider than
+the bounds of your dataset.
 
 
 Copyright
