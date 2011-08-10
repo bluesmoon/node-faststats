@@ -28,8 +28,6 @@ Stats.prototype = {
 		this._stddev = null;
 		this._moe = null;
 	
-		this._q1 = this._q2 = this._q3 = null;
-	
 		return this;
 	},
 
@@ -49,7 +47,6 @@ Stats.prototype = {
 			this._stddev = null;
 			this._gstddev = null;
 			this._moe = null;
-			this._q1 = this._q2 = this._q3 = null;
 
 			this._data_sorted = null;
 		}
@@ -135,14 +132,7 @@ Stats.prototype = {
 		if(this._data_sorted === null)
 			this._data_sorted = this.data.sort();
 
-		if(this._q2 === null) {
-			if(this.length % 2 == 1)
-				this._q2 = this._data_sorted[Math.floor(this.length/2)];
-			else
-				this._q2 = (this._data_sorted[this.length/2] + this._data_sorted[this.length/2-1])/2;
-		}
-
-		return this._q2;
+		return (this._data_sorted[Math.floor((this.length-1)/2)] + this._data_sorted[Math.ceil((this.length-1)/2)])/2;
 	},
 
 	iqr: function() {
