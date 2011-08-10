@@ -6,9 +6,12 @@ Note that if your data is too large, there _will_ be overflow.
 function asc(a, b) { return a-b; }
 
 function Stats() {
+	var a = arguments;
+	if(a[0] instanceof Array)
+		a=a[0];
 	this.reset();
-	if(arguments)
-		this.push.apply(this, arguments);
+	if(a)
+		this.push.apply(this, a);
 
 	return this;
 }
@@ -206,6 +209,10 @@ Stats.prototype = {
 		}
 
 		return b;
+	},
+
+	copy: function() {
+		return new Stats(this.data);
 	}
 };
 
