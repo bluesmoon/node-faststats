@@ -3,6 +3,8 @@ Note that if your data is too large, there _will_ be overflow.
 */
 
 
+function asc(a, b) { return a-b; }
+
 function Stats() {
 	this.reset();
 	if(arguments)
@@ -16,19 +18,42 @@ Stats.prototype = {
 		this.data = [];
 		this.length = 0;
 	
-		this.data_sorted = null;
-	
 		this.sum = 0;
 		this.sum_of_squares = 0;
 		this.sum_of_logs = 0;
 		this.sum_of_square_of_logs = 0;
 	
+		this._reset_cache();
+
+		return this;
+	},
+
+	_reset_cache: function() {
 		this._amean = null;
 		this._gmean = null;
 		this._stddev = null;
 		this._moe = null;
-	
-		return this;
+		this._data_sorted = null;
+	},
+
+	_add_cache: function(a) {
+		this.sum += a;
+		this.sum_of_squares += a*a;
+		this.sum_of_logs += Math.log(a);
+		this.sum_of_square_of_logs += Math.pow(Math.log(a), 2);
+		this.length++;
+
+		this._reset_cache();
+	},
+
+	_del_cache: function(a) {
+		this.sum -= a;
+		this.sum_of_squares -= a*a;
+		this.sum_of_logs -= Math.log(a);
+		this.sum_of_square_of_logs -= Math.pow(Math.log(a), 2);
+		this.length--;
+
+		this._reset_cache();
 	},
 
 	push: function() {
@@ -36,22 +61,41 @@ Stats.prototype = {
 		for(i=0; i<arguments.length; i++) {
 			a = arguments[i];
 			this.data.push(a);
-			this.sum += a;
-			this.sum_of_squares += a*a;
-			this.sum_of_logs += Math.log(a);
-			this.sum_of_square_of_logs += Math.pow(Math.log(a), 2);
-			this.length++;
-
-			this._amean = null;
-			this._gmean = null;
-			this._stddev = null;
-			this._gstddev = null;
-			this._moe = null;
-
-			this._data_sorted = null;
+			this._add_cache(a);
 		}
 
-		return this;
+		return this.length;
+	},
+
+	pop: function() {
+		if(this.length === 0)
+			return undefined;
+
+		var a = this.data.pop();
+		this._del_cache(a);
+
+		return a;
+	},
+
+	unshift: function() {
+		var i, a;
+		for(i=0; i<arguments.length; i++) {
+			a = arguments[i];
+			this.data.unshift(a);
+			this._add_cache(a);
+		}
+
+		return this.length;
+	},
+
+	shift: function() {
+		if(this.length === 0)
+			return undefined;
+
+		var a = this.data.shift();
+		this._del_cache(a);
+
+		return a;
 	},
 
 	amean: function() {
@@ -110,7 +154,7 @@ Stats.prototype = {
 		if(this.data.length === 0)
 			return NaN;
 		if(this._data_sorted === null)
-			this._data_sorted = this.data.sort();
+			this._data_sorted = this.data.sort(asc);
 
 		if(p <=  0)
 			return this._data_sorted[0];
@@ -130,7 +174,7 @@ Stats.prototype = {
 		if(this.data.length === 0)
 			return NaN;
 		if(this._data_sorted === null)
-			this._data_sorted = this.data.sort();
+			this._data_sorted = this.data.sort(asc);
 
 		return (this._data_sorted[Math.floor((this.length-1)/2)] + this._data_sorted[Math.ceil((this.length-1)/2)])/2;
 	},
@@ -153,7 +197,7 @@ Stats.prototype = {
 			return new Stats();
 
 		if(this._data_sorted === null)
-			this._data_sorted = this.data.sort();
+			this._data_sorted = this.data.sort(asc);
 
 		for(i=0; i<this.length && (this._data_sorted[i] < high || (!open && this._data_sorted[i] === high)); i++) {
 			if(this._data_sorted[i] > low || (!open && this._data_sorted[i] === low)) {
