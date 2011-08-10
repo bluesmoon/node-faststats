@@ -81,8 +81,8 @@ Stats.prototype = {
 	},
 
 	unshift: function() {
-		var i, a;
-		for(i=0; i<arguments.length; i++) {
+		var i=arguments.length, a;
+		while(i--) {
 			a = arguments[i];
 			this.data.unshift(a);
 			this._add_cache(a);
