@@ -70,9 +70,9 @@ s4 = new Stats();
 s4.unshift(1, 2, 3, 10, 8, 4);
 s4.push(3);
 
-assert.equal(s1.amean().toFixed(2), s2.amean.toFixed(2));
-assert.equal(s1.amean().toFixed(2), s3.amean.toFixed(2));
-assert.equal(s1.amean().toFixed(2), s4.amean.toFixed(2));
+assert.equal(s1.amean().toFixed(2), s2.amean().toFixed(2));
+assert.equal(s1.amean().toFixed(2), s3.amean().toFixed(2));
+assert.equal(s1.amean().toFixed(2), s4.amean().toFixed(2));
 ```
 
 Note that we use the `toFixed()` method of the Number class when comparing numbers.  Remember that even if you
@@ -137,7 +137,7 @@ method to get at it:
 
 ```javascript
 var a = s1.amean();
-console.equal(a.toFixed(2), "4.67");   // remember we popped out the last item of `s1` above.
+assert.equal(a.toFixed(2), "4.67");   // remember we popped out the last item of `s1` above.
 ```
 
 #### Geometric Mean
@@ -147,7 +147,7 @@ for data sets that follow an exponential or log-normal distribution.  Use the `g
 
 ```javascript
 var a = s1.gmean();
-console.equal(a.toFixed(2), "3.53");
+assert.equal(a.toFixed(2), "3.53");
 ```
 
 #### Median
@@ -157,7 +157,7 @@ outliers and noise that would not normally be found in a complete population.  U
 
 ```javascript
 var a = s1.median();
-console.equal(a.toFixed(2), "3.50");
+assert.equal(a.toFixed(2), "3.50");
 ```
 
 If your data set contains an odd number of points, the median will be the middle point.  If it contains an even number of
@@ -176,7 +176,7 @@ var q1 = s1.percentile(25);
 
 assert.equal(p95.toFixed(2), "10.00");
 assert.equal(m.toFixed(2), "3.50");
-assert.equal(q1.toFixed(2), "2.5");
+assert.equal(q1.toFixed(2), "2.50");
 ```
 
 Passing in 50 as an argument will return the median, while 25 and 75 will return the first and third quartiles respectively.
