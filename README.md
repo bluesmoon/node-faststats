@@ -198,7 +198,56 @@ assert.equal(r[1], 10);
 
 ### Data Accuracy
 
+There are various statistical values that tell you how accurate or uniform your data is.  `fast-stats` implements
+the Arithmetic Standard Deviation, Geometric Standard Deviation and 95% Confidence Interval Margin of Error.
 
+#### Arithmetic Standard Deviation
+
+Also commonly just called the Standard Deviation, with the symbol σ.  This tells you the spread of your data if
+it follows a normal (or close to normal) distribution, ie, the bell curve.  `fast-stats` is really fast at
+calculating the standard deviation of a dataset.  Use the `stddev()` method or the `σ()` method to get at it.
+
+```javascript
+var sd = s1.σ();
+
+assert.equal(sd.toFixed(2), '3.25');
+```
+
+The arithmetic standard deviation is used in conjunction with the arithmetic mean to tell you the spread of your
+dataset: `[amean-stddev, amean+stddev]`.  Note that you could also use 2 or 3 standard deviations for different
+spreads.
+
+#### Geometric Standard Deviation
+
+The geometric mean tells you the spread of your data if it follows a log-normal or exponential distribution.
+Use the `gstddev()` method to get at it.
+
+```javascript
+var gsd = s1.gstddev();
+
+assert.equal(gsd.toFixed(2), '2.20');
+```
+
+The geometric standard deviation is used in conjunction with the geometric mean to tell you the spread of your
+dataset: `[gmean/gstddev, gmean*gstddev]`.  Note that this range is not symmetric around the geometric mean.
+
+#### 95% Confidence Margin of Error
+
+The Margin of Error value tells you the range within which the real arithmetic mean of the population is likely to
+be with 95% confidence.  Use the `moe()` method to get at it.
+
+```javascript
+var moe = s1.moe();
+
+assert.equal(moe.toFixed(2), '2.60');
+```
+
+This value suggests that we are 95% certain that the real mean of the population is within 2.60 of the calculated 
+arithmetic mean of 4.67.  We could use this to find out the percent error in our sample.  In this case there is a
+55.71% error.
+
+The margin of error is inversely proportional to the square root of the number of data points, so increasing the
+size of your sample will reduce the margin of error.  It is good to strive for a margin of error of less than 5%.
 
 
 Copyright
