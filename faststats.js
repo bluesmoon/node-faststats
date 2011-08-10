@@ -25,6 +25,7 @@ Stats.prototype = {
 		this.sum_of_squares = 0;
 		this.sum_of_logs = 0;
 		this.sum_of_square_of_logs = 0;
+		this.max = this.min = null;
 	
 		this._reset_cache();
 
@@ -47,6 +48,11 @@ Stats.prototype = {
 		this.sum_of_square_of_logs += Math.pow(Math.log(a), 2);
 		this.length++;
 
+		if(this.max === null || this.max < a)
+			this.max = a;
+		if(this.min === null || this.min > a)
+			this.min = a;
+
 		this._reset_cache();
 	},
 
@@ -56,6 +62,20 @@ Stats.prototype = {
 		this.sum_of_logs -= Math.log(a);
 		this.sum_of_square_of_logs -= Math.pow(Math.log(a), 2);
 		this.length--;
+
+		if(this.length === 0) {
+			this.max = this.min = null;
+		}
+		else if(this.max === a || this.min === a) {
+			var i = this.length-1;
+			this.max = this.min = this.data[i--];
+			while(i--) {
+				if(this.max < this.data[i])
+					this.max = this.data[i];
+				if(this.min > this.data[i])
+					this.min = this.data[i];
+			}
+		}
 
 		this._reset_cache();
 	},
@@ -121,7 +141,7 @@ Stats.prototype = {
 	},
 
 	stddev: function() {
-		if(this.data.length === 0)
+		if(this.length === 0)
 			return NaN;
 		if(this._stddev === null)
 			this._stddev = Math.sqrt(this.length * this.sum_of_squares - this.sum*this.sum)/this.length;
@@ -130,7 +150,7 @@ Stats.prototype = {
 	},
 
 	gstddev: function() {
-		if(this.data.length === 0)
+		if(this.length === 0)
 			return NaN;
 		if(this._gstddev === null)
 			this._gstddev = Math.exp(Math.sqrt(this.length * this.sum_of_square_of_logs - this.sum_of_logs*this.sum_of_logs)/this.length);
@@ -139,7 +159,7 @@ Stats.prototype = {
 	},
 
 	moe: function() {
-		if(this.data.length === 0)
+		if(this.length === 0)
 			return NaN;
 		// see http://en.wikipedia.org/wiki/Standard_error_%28statistics%29
 		if(this._moe === null)
@@ -149,13 +169,13 @@ Stats.prototype = {
 	},
 
 	range: function() {
-		if(this.data.length === 0)
+		if(this.length === 0)
 			return [NaN, NaN];
-		return [Math.max(this.data), Math.min(this.data)];
+		return [this.min, this.max];
 	},
 
 	percentile: function(p) {
-		if(this.data.length === 0)
+		if(this.length === 0)
 			return NaN;
 		if(this._data_sorted === null)
 			this._data_sorted = this.data.sort(asc);
@@ -175,7 +195,7 @@ Stats.prototype = {
 	},
 
 	median: function() {
-		if(this.data.length === 0)
+		if(this.length === 0)
 			return NaN;
 		if(this._data_sorted === null)
 			this._data_sorted = this.data.sort(asc);
