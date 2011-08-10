@@ -302,6 +302,11 @@ In some cases, IQR filtering may not filter out anything.  This can happen if th
 the bounds of your dataset.
 
 
+References
+----------
+
+Wikipedia is a great place to get information about Statistical functions.
+
 Copyright
 ---------
 
