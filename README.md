@@ -28,7 +28,7 @@ synopsis
 ```javascript
 var Stats = require('fast-stats').Stats;
 
-var s = new Stats(1, 2, 3, 10, 8, 4, 3);
+var s = new Stats().push(1, 2, 3, 10, 8, 4, 3);
 console.log(s.amean().toFixed(2));
 // 4.43
 ```
@@ -48,20 +48,22 @@ runtime calls are executed in-memory and are fast.
 
 #### Initialising and adding data
 
-The `Stats` constructor looks a lot like an array in the way you add and remove data to its ends, however there is
-no direct access to individual elements.  The constructor takes in multiple values or a single list of values.  All
-values must be numbers and behaviour is undefined if they are not.
+The `Stats` object looks a lot like an array in the way you add and remove data to its ends, however there is
+no direct access to individual elements.  Data is added to the object using the `push()` and `unshift()` methods.
+All values must be numbers and behaviour is undefined if they are not.
 
-Additionally, the `push()` method may take in a list of values that will be added to the end of the current list and
-the `unshift()` method may take in a list of values that will be added to the beginning of the list.
+The `push()` method takes in a list of values that will be added to the end of the current list and
+the `unshift()` method takes in a list of values that will be added to the beginning of the list.
+
+Instead of passing in multiple parameters, you can also pass in an array of numbers as the first parameter.
 
 The following are equivalent.
 
 ```javascript
 var s1, s2, s3, s4;
-s1 = new Stats(1, 2, 3, 10, 8, 4, 3);
+s1 = new Stats().push(1, 2, 3, 10, 8, 4, 3);
 
-s2 = new Stats([1, 2, 3, 10, 8, 4, 3]);
+s2 = new Stats().push([1, 2, 3, 10, 8, 4, 3]);
 
 s3 = new Stats();
 s3.push(1, 2, 3, 10, 8, 4, 3);
@@ -82,7 +84,7 @@ method is useful to restrict how precise we want our comparison to be.  Be aware
 
 `fast-stats` does not use the `toFixed()` method internally.
 
-The `push()` and `unshift()` methods return the new length of the object.
+The `push()` and `unshift()` methods return the the object.
 
 #### Removing data
 

@@ -5,18 +5,30 @@ Note that if your data is too large, there _will_ be overflow.
 
 function asc(a, b) { return a-b; }
 
-function Stats() {
-	var a = arguments;
-	if(a[0] instanceof Array)
-		a=a[0];
+var config_params = {
+	bucket_size: function(o, s) {
+		o._config.bucket_size = s;
+		o.buckets = [];
+	}
+};
+
+function Stats(c) {
 	this.reset();
-	if(a)
-		this.push.apply(this, a);
+
+	if(c) {
+		for(var k in config_params) {
+			if(c.hasOwnProperty(k)) {
+				config_params[k](this, c[k]);
+			}
+		}
+	}
 
 	return this;
 }
 
 Stats.prototype = {
+	_config: {},
+
 	reset: function() {
 		this.data = [];
 		this.length = 0;
@@ -53,6 +65,11 @@ Stats.prototype = {
 		if(this.min === null || this.min > a)
 			this.min = a;
 
+		if(this.buckets) {
+			var b = Math.floor(a/this._config.bucket_size);
+			this.buckets[b] = (this.buckets[b] || 0) + 1;
+		}
+
 		this._reset_cache();
 	},
 
@@ -77,18 +94,27 @@ Stats.prototype = {
 			}
 		}
 
+		if(this.buckets) {
+			var b = Math.floor(a/this._config.bucket_size);
+			this.buckets[b]--;
+			if(this.buckets[b] === 0)
+				delete this.buckets[b];
+		}
+
 		this._reset_cache();
 	},
 
 	push: function() {
-		var i, a;
-		for(i=0; i<arguments.length; i++) {
-			a = arguments[i];
+		var i, a, args=Array.prototype.slice.call(arguments, 0);
+		if(args.length && args[0] instanceof Array)
+			args = args[0];
+		for(i=0; i<args.length; i++) {
+			a = args[i];
 			this.data.push(a);
 			this._add_cache(a);
 		}
 
-		return this.length;
+		return this;
 	},
 
 	pop: function() {
@@ -102,14 +128,17 @@ Stats.prototype = {
 	},
 
 	unshift: function() {
-		var i=arguments.length, a;
+		var i, a, args=Array.prototype.slice.call(arguments, 0);
+		if(args.length && args[0] instanceof Array)
+			args = args[0];
+		i=args.length;
 		while(i--) {
-			a = arguments[i];
+			a = args[i];
 			this.data.unshift(a);
 			this._add_cache(a);
 		}
 
-		return this.length;
+		return this;
 	},
 
 	shift: function() {
@@ -172,6 +201,15 @@ Stats.prototype = {
 		if(this.length === 0)
 			return [NaN, NaN];
 		return [this.min, this.max];
+	},
+
+	distribution: function() {
+		if(this.length === 0)
+			return [];
+		if(!this.buckets)
+			throw "bucket_size not configured.";
+
+		return this.buckets;
 	},
 
 	percentile: function(p) {

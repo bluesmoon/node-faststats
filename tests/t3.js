@@ -2,9 +2,9 @@ var assert = require('assert'),
     Stats = require('fast-stats').Stats;
 
 var s1, s2, s3, s4;
-s1 = new Stats(1, 2, 3, 10, 8, 4, 3);
+s1 = new Stats().push(1, 2, 3, 10, 8, 4, 3);
 
-s2 = new Stats([1, 2, 3, 10, 8, 4, 3]);
+s2 = new Stats().push([1, 2, 3, 10, 8, 4, 3]);
 
 s3 = new Stats();
 s3.push(1, 2, 3, 10, 8, 4, 3);
