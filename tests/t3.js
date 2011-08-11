@@ -33,7 +33,7 @@ assert.equal(s4.length, 0);
 
 s4 = s3.copy();
 
-assert.equal(s1.length, s2.length);
+assert.equal(s3.length, s4.length);
 
 var a = s1.amean();
 assert.equal(a.toFixed(2), "4.67");   // remember we popped out the last item of `s1` above.
@@ -87,3 +87,12 @@ r = s6.range();
 
 assert.equal(r[0], 1);
 assert.equal(r[1], 10);
+
+
+var s7 = new Stats({store_data: false, bucket_precision: 2}).push(1, 2, 3, 10, 8, 4, 3);
+var s8 = new Stats({store_data: true, bucket_precision: 1}).push(1, 2, 3, 10, 8, 4, 3);
+var s9 = s7.copy()
+
+assert.equal(s9.length, s7.length);
+assert.equal(s9.buckets.length, s7.buckets.length);
+assert.equal(s9.amean(), s7.amean());

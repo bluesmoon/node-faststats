@@ -44,6 +44,48 @@ API
 fast-stats is completely synchronous.  There are no blocking methods and consequently no callbacks involved.  All
 runtime calls are executed in-memory and are fast.
 
+### Configuring the Stats object
+
+The `Stats` constructor takes in a configuration object as a parameter.  This is a simple key-value list that tells
+`fast-stats` how to behave under certain conditions.
+
+```javascript
+var s = new Stats({ bucket_precision: 10 });
+```
+
+The following configuration options are recognised.  All of them are optional.
+
+ *  `bucket_precision`: *[number]* Tells `fast-stats` to maintain a histogram of your dataset using this parameter as the least
+    count, or precision.
+
+    This is useful if you have a very large data set, and want to approximate percentile values like the median 
+    without having to store the entire dataset in memory.  For example, if you had a million time measurements
+    between 0.5 and 1.5 seconds, you could store all million of them, or you could set up 1000 one millisecond
+    buckets and store a count of items in each bucket with a precision of 1 millisecond each.  If you reduce (higher
+    values are considered less precise) the precision to 10 milliseconds, the number of buckets reduces from 1000
+    to 100, taking up less memory overall.
+
+    By default, `fast-stats` will not maintain buckets since it does not know the least count and range of your
+    dataset in advance.
+
+    This option is required if you need to use the `distribution()` method.
+
+ *  `store_data`: *[boolean]* Tells `fast-stats` not to store actual data values. This is useful to reduce memory utilisation
+    for large datasets, however it comes with a few caveats.
+
+    1.  You can no longer get an exact median or other percentile value out of your dataset, however you could
+        use bucketing (see `bucket_precision` above) to get an approximate percentile value.
+    2.  You can no longer run an exact `iqr` filter or a `band_pass` filter on the data, however you could use
+        bucketing to get an approximate filtered object.
+    3.  You can no longer get at the entire dataset or remove data from the dataset.
+
+    The mean, standard deviation and margin of error calculations are unaffected by this parameter.  If you use
+    bucketing, and only care about the mean, standard deviation and margin of error or an approximate median or
+    percentile value, set this option to false.
+
+    By default, `store_data` is `true`.
+
+
 ### Getting data in and out
 
 #### Initialising and adding data
@@ -121,7 +163,7 @@ The `copy()` method returns a copy of the current Stats object.
 ```javascript
 s4 = s3.copy();
 
-assert.equal(s1.length, s2.length);
+assert.equal(s3.length, s4.length);
 ```
 
 ### Summaries & Averages
