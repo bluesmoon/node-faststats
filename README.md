@@ -207,6 +207,9 @@ assert.equal(a.toFixed(2), "3.50");
 If your data set contains an odd number of points, the median will be the middle point.  If it contains an even number of
 points, then the median will be the arithmetic mean of the two middle points.
 
+If your Stats object is configured to use buckets and has `store_data` set to false, then the median will be an approximation
+of the actual median.
+
 #### Any Percentile
 
 You can also get at any percentile value within the data.  Use the `percentile()` method to get at this data.  The
@@ -226,6 +229,9 @@ assert.equal(q1.toFixed(2), "2.50");
 Passing in 50 as an argument will return the median, while 25 and 75 will return the first and third quartiles respectively.
 These three special values may be arithmetic means of two other values within the set.  All other arguments will return a
 number from the data set.
+
+If your Stats object is configured to use buckets and has `store_data` set to false, then the percentile value returned will
+be an approximation of the actual percentile based on the configured `bucket_precision`.
 
 #### Range
 
@@ -300,6 +306,13 @@ When dealing with statistical samples, it may be necessary to filter the dataset
 an outlier is fairly obvious, and you can specify an upper and lower limit for it.   At other times, outliers are
 only apparent when looking at the rest of the dataset.  Inter-Quartile-Range filtering is useful to filter out these
 kinds of data sets.
+
+Note that if your Stats object is configured to use buckets and has `store_data` set to false, then all filtering
+will be done on an approximation of the data based on the configured value of `bucket_precision`.  For example,
+if you have a set of numbers from 1-100 with `bucket_precision` set to 1, then filtering the dataset between 55
+and 85 will get you a dataset between 55 and 85.  If instead, `bucket_precision` is set to 10, then the filtered
+dataset will approximately range from 50 to 90.  Note, however, that the `range()` method will attempt to match as
+closely as possible the real range.
 
 #### Band-pass filtering
 
