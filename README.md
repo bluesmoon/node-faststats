@@ -245,6 +245,70 @@ assert.equal(r.length, 2);
 assert.equal(r[0], 1);
 assert.equal(r[1], 10);
 ```
+#### Distribution
+
+The `distribution()` method tells you how your data is distributed.  You need to set the `bucket_precision` configuration
+option if you plan on using this method.  It will then split your data into buckets based on the value of `bucket_precision`
+and tell you how many data points fall into each bucket.  You can use this to plot a histogram of your data, or to compare
+it to commonly known distribution functions.
+
+The return value is a sparse array of buckets with counts of datapoints per bucket.   To save on memory, any empty buckets
+are undefined.  You should treat an undefined bucket as if it had 0 datapoints.
+
+A bucket structure looks like this:
+```javascript
+{
+   bucket: <bucket midpoint>,
+   range:  [<bucket low>, <bucket high>],
+   count:  <number of datapoints>
+}
+```
+
+Note that the upper bound of the `range` is open, ie, the range does not include the upper bound.
+
+```javascript
+var s7 = new Stats({bucket_precision: 10});
+
+// Populate s7 with sequence of squares from 0-10
+// 0 1 4 9 16 25 36 49 64 81 100
+for(var i=0; i<=10; i++)
+	s7.push(i*i);
+
+// distribution should be [4, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1]
+// but 0s are undefined to save on memory
+var d=s7.distribution();
+
+// length should be one more than (max-min)/bucket_precision
+assert.equal(d.length, 11);
+
+d.forEach(function(e) {
+	switch(e.bucket) {
+		case 5: assert.equal(e.count, 4);	// 0 1 4 9
+			break;
+		case 15: assert.equal(e.count, 1);	// 16
+			break;
+		case 25: assert.equal(e.count, 1);	// 25
+			break;
+		case 35: assert.equal(e.count, 1);	// 36
+			break;
+		case 45: assert.equal(e.count, 1);	// 49
+			break;
+		case 55: assert.equal(e.count, 0);
+			break;
+		case 65: assert.equal(e.count, 1);	// 64
+			break;
+		case 75: assert.equal(e.count, 0);
+			break;
+		case 85: assert.equal(e.count, 1);	// 81
+			break;
+		case 95: assert.equal(e.count, 0);
+			break;
+		case 105: assert.equal(e.count, 1);	// 100
+			break;
+		default: assert.fail(e.bucket, "", "", "Unexpected bucket");
+	}
+});
+```
 
 
 ### Data Accuracy

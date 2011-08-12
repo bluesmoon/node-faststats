@@ -222,7 +222,18 @@ Stats.prototype = {
 		if(!this.buckets)
 			throw "bucket_precision not configured.";
 
-		return this.buckets;
+		var d = [], j, i=Math.floor(this.min/this._config.bucket_precision), l=Math.floor(this.max/this._config.bucket_precision)+1;
+		for(j=0; i<l && i<this.buckets.length; i++, j++) {
+			if(this.buckets[i])
+				d[j] = {
+					bucket: (i+0.5)*this._config.bucket_precision,
+					range: [i*this._config.bucket_precision, (i+1)*this._config.bucket_precision],
+					count: this.buckets[i]
+				};
+		}
+
+		return d;
+		
 	},
 
 	percentile: function(p) {

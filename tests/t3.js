@@ -88,11 +88,53 @@ r = s6.range();
 assert.equal(r[0], 1);
 assert.equal(r[1], 10);
 
+var s7 = new Stats({bucket_precision: 10});
 
-var s7 = new Stats({store_data: false, bucket_precision: 2}).push(1, 2, 3, 10, 8, 4, 3);
-var s8 = new Stats({store_data: true, bucket_precision: 1}).push(1, 2, 3, 10, 8, 4, 3);
-var s9 = s7.copy()
+// Populate s7 with sequence of squares from 0-10
+// 0 1 4 9 16 25 36 49 64 81 100
+for(var i=0; i<=10; i++)
+	s7.push(i*i);
 
-assert.equal(s9.length, s7.length);
-assert.equal(s9.buckets.length, s7.buckets.length);
-assert.equal(s9.amean(), s7.amean());
+// distribution should be [4, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1]
+// but 0s are undefined to save on memory
+var d=s7.distribution();
+
+// length should be one more than (max-min)/bucket_precision
+assert.equal(d.length, 11);
+
+d.forEach(function(e) {
+	switch(e.bucket) {
+		case 5: assert.equal(e.count, 4);	// 0 1 4 9
+			break;
+		case 15: assert.equal(e.count, 1);	// 16
+			break;
+		case 25: assert.equal(e.count, 1);	// 25
+			break;
+		case 35: assert.equal(e.count, 1);	// 36
+			break;
+		case 45: assert.equal(e.count, 1);	// 49
+			break;
+		case 55: assert.equal(e.count, 0);
+			break;
+		case 65: assert.equal(e.count, 1);	// 64
+			break;
+		case 75: assert.equal(e.count, 0);
+			break;
+		case 85: assert.equal(e.count, 1);	// 81
+			break;
+		case 95: assert.equal(e.count, 0);
+			break;
+		case 105: assert.equal(e.count, 1);	// 100
+			break;
+		default: assert.fail(e.bucket, "", "", "Unexpected bucket");
+	}
+});
+
+var s8 = new Stats({store_data: false, bucket_precision: 2}).push(1, 2, 3, 10, 8, 4, 3);
+var s9 = s8.copy()
+
+assert.equal(s9.length, s8.length);
+assert.equal(s9.buckets.length, s8.buckets.length);
+assert.equal(s9.amean(), s8.amean());
+
+
