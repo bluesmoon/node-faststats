@@ -259,7 +259,7 @@ Stats.prototype = {
 
 		if(this._config.store_data) {
 			if(this._data_sorted === null)
-				this._data_sorted = this.data.sort(asc);
+				this._data_sorted = this.data.slice(0).sort(asc);
 
 			if(typeof i == 'number')
 				return this._data_sorted[i];
@@ -307,7 +307,7 @@ Stats.prototype = {
 
 		if(this._config.store_data) {
 			if(this._data_sorted === null)
-				this._data_sorted = this.data.sort(asc);
+				this._data_sorted = this.data.slice(0).sort(asc);
 	
 			for(i=0; i<this.length && (this._data_sorted[i] < high || (!open && this._data_sorted[i] === high)); i++) {
 				if(this._data_sorted[i] > low || (!open && this._data_sorted[i] === low)) {
