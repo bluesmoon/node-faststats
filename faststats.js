@@ -272,7 +272,7 @@ Stats.prototype = {
 			}
 			if(i == l && this.buckets[i])
 				d[i] = {
-					bucket: (j + this.max)/2
+					bucket: (j + this.max)/2,
 					range: [j, this.max],
 					count: this.buckets[i]
 				};
