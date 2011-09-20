@@ -14,6 +14,15 @@ var config_params = {
 		o.buckets = [];
 	},
 
+	buckets: function(o, b) {
+		if(!Array.isArray(b) || b.length == 0) {
+			throw "buckets must be an array of bucket limits";
+		}
+
+		o._config.buckets = b;
+		o.buckets = [];
+	},
+
 	store_data: function(o, s) {
 		if(typeof s != "boolean") {
 			throw "store_data must be a true or false";
@@ -77,7 +86,17 @@ Stats.prototype = {
 			this.min = a;
 
 		if(this.buckets) {
-			var b = Math.floor(a/this._config.bucket_precision);
+			var b;
+			if(this._config.buckets) {
+				for(b=0; b<this._config.buckets.length; b++) {
+					if(a <= this._config.buckets[b]) {
+						break;
+					}
+				}
+			}
+			else if(this._config.bucket_precision) {
+				b = Math.floor(a/this._config.bucket_precision);
+			}
 			this.buckets[b] = (this.buckets[b] || 0) + 1;
 		}
 
@@ -106,7 +125,17 @@ Stats.prototype = {
 		}
 
 		if(this.buckets) {
-			var b = Math.floor(a/this._config.bucket_precision);
+			var b;
+			if(this._config.buckets) {
+				for(b=0; b<this._config.buckets.length; b++) {
+					if(a <= this._config.buckets[b]) {
+						break;
+					}
+				}
+			}
+			else if(this._config.bucket_precision) {
+				b = Math.floor(a/this._config.bucket_precision);
+			}
 			this.buckets[b]--;
 			if(this.buckets[b] === 0)
 				delete this.buckets[b];
@@ -220,16 +249,45 @@ Stats.prototype = {
 		if(this.length === 0)
 			return [];
 		if(!this.buckets)
-			throw "bucket_precision not configured.";
+			throw "bucket_precision or buckets not configured.";
 
-		var d = [], j, i=Math.floor(this.min/this._config.bucket_precision), l=Math.floor(this.max/this._config.bucket_precision)+1;
-		for(j=0; i<l && i<this.buckets.length; i++, j++) {
-			if(this.buckets[i])
-				d[j] = {
-					bucket: (i+0.5)*this._config.bucket_precision,
-					range: [i*this._config.bucket_precision, (i+1)*this._config.bucket_precision],
+		var d=[], j, i, l;
+
+		if(this._config.buckets) {
+			j=this.min;
+			l=Math.min(this.buckets.length, this._config.buckets.length);
+
+			for(; i<l; j=this._config.buckets[i++]) {
+				if(this.min > this._config.buckets[i])
+					continue;
+
+				d[i] = {
+					bucket: (j+this._config.buckets[i])/2,
+					range: [j, this._config.buckets[i]],
+					count: (this.buckets[i]|0)
+				};
+
+				if(this.max <= this._config.buckets[i])
+					break;
+			}
+			if(i == l && this.buckets[i])
+				d[i] = {
+					bucket: (j + this.max)/2
+					range: [j, this.max],
 					count: this.buckets[i]
 				};
+		}
+		else if(this._config.bucket_precision) {
+			i=Math.floor(this.min/this._config.bucket_precision);
+			l=Math.floor(this.max/this._config.bucket_precision)+1;
+			for(j=0; i<l && i<this.buckets.length; i++, j++) {
+				if(this.buckets[i])
+					d[j] = {
+						bucket: (i+0.5)*this._config.bucket_precision,
+						range: [i*this._config.bucket_precision, (i+1)*this._config.bucket_precision],
+						count: this.buckets[i]
+					};
+			}
 		}
 
 		return d;
@@ -271,7 +329,11 @@ Stats.prototype = {
 			if(typeof v != 'number')
 				v = v[0];
 
-			j = Math.floor(this.min/this._config.bucket_precision);
+			if(this._config.buckets)
+				j=0;
+			else if(this._config.bucket_precision)
+				j = Math.floor(this.min/this._config.bucket_precision);
+
 			for(; j<this.buckets.length; j++) {
 				if(!this.buckets[j])
 					continue;
@@ -280,7 +342,11 @@ Stats.prototype = {
 				}
 				v-=this.buckets[j];
 			}
-			return (j+0.5)*this._config.bucket_precision;
+
+			if(this._config.buckets)
+				return ((j>0?this._config.buckets[j-1]:this.min) + (j<this._config.buckets.length?this._config.buckets[j]:this.max))/2;
+			else if(this._config.bucket_precision)
+				return (j+0.5)*this._config.bucket_precision;
 		}
 	},
 
