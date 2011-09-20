@@ -242,43 +242,43 @@ Stats.prototype = {
 
 		// If we come here, we either have sorted data or sorted buckets
 
-		var i;
+		var v;
 
 		if(p <=  0)
-			i=0;
+			v=0;
 		else if(p == 25)
-			i = [Math.floor((this.length-1)*0.25), Math.ceil((this.length-1)*0.25)];
+			v = [Math.floor((this.length-1)*0.25), Math.ceil((this.length-1)*0.25)];
 		else if(p == 50)
-			i = [Math.floor((this.length-1)*0.5), Math.ceil((this.length-1)*0.5)];
+			v = [Math.floor((this.length-1)*0.5), Math.ceil((this.length-1)*0.5)];
 		else if(p == 75)
-			i = [Math.floor((this.length-1)*0.75), Math.ceil((this.length-1)*0.75)];
+			v = [Math.floor((this.length-1)*0.75), Math.ceil((this.length-1)*0.75)];
 		else if(p >= 100)
-			i = this.length-1;
+			v = this.length-1;
 		else
-			i = Math.floor(this.length*p/100);
+			v = Math.floor(this.length*p/100);
 
 		if(this._config.store_data) {
 			if(this._data_sorted === null)
 				this._data_sorted = this.data.slice(0).sort(asc);
 
-			if(typeof i == 'number')
-				return this._data_sorted[i];
+			if(typeof v == 'number')
+				return this._data_sorted[v];
 			else
-				return (this._data_sorted[i[0]] + this._data_sorted[i[1]])/2;
+				return (this._data_sorted[v[0]] + this._data_sorted[v[1]])/2;
 		}
 		else {
 			var j;
-			if(typeof i != 'number')
-				i = i[0];
+			if(typeof v != 'number')
+				v = v[0];
 
 			j = Math.floor(this.min/this._config.bucket_precision);
 			for(; j<this.buckets.length; j++) {
 				if(!this.buckets[j])
 					continue;
-				if(i<this.buckets[j]) {
+				if(v<this.buckets[j]) {
 					break;
 				}
-				i-=this.buckets[j];
+				v-=this.buckets[j];
 			}
 			return (j+0.5)*this._config.bucket_precision;
 		}
