@@ -257,7 +257,7 @@ Stats.prototype = {
 			j=this.min;
 			l=Math.min(this.buckets.length, this._config.buckets.length);
 
-			for(; i<l; j=this._config.buckets[i++]) {
+			for(i=0; i<l; j=this._config.buckets[i++]) {
 				if(this.min > this._config.buckets[i])
 					continue;
 

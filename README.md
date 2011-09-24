@@ -70,6 +70,13 @@ The following configuration options are recognised.  All of them are optional.
 
     This option is required if you need to use the `distribution()` method.
 
+ *  `buckets`: *[array of numbers]* Tells `fast-stats` to maintain a histogram of your dataset using these custom buckets.
+
+    Each number in the array is the upper limit of a bucket.  The lower limit of the first bucket is 0, the lower limit
+    for all other buckets is the upper limit of the previous bucket.
+
+    If you use both `bucket_precision` and `buckets`, `buckets` takes precedence.
+
  *  `store_data`: *[boolean]* Tells `fast-stats` not to store actual data values. This is useful to reduce memory utilisation
     for large datasets, however it comes with a few caveats.
 
@@ -231,7 +238,7 @@ These three special values may be arithmetic means of two other values within th
 number from the data set.
 
 If your Stats object is configured to use buckets and has `store_data` set to false, then the percentile value returned will
-be an approximation of the actual percentile based on the configured `bucket_precision`.
+be an approximation of the actual percentile based on the configured `bucket_precision` or `buckets`.
 
 #### Range
 
@@ -247,10 +254,10 @@ assert.equal(r[1], 10);
 ```
 #### Distribution
 
-The `distribution()` method tells you how your data is distributed.  You need to set the `bucket_precision` configuration
-option if you plan on using this method.  It will then split your data into buckets based on the value of `bucket_precision`
-and tell you how many data points fall into each bucket.  You can use this to plot a histogram of your data, or to compare
-it to commonly known distribution functions.
+The `distribution()` method tells you how your data is distributed.  You need to set the `bucket_precision` or `buckets`
+configuration options if you plan on using this method.  It will then split your data into buckets based on the value of
+`bucket_precision` or `buckets` and tell you how many data points fall into each bucket.  You can use this to plot a 
+histogram of your data, or to compare it to commonly known distribution functions.
 
 The return value is a sparse array of buckets with counts of datapoints per bucket.   To save on memory, any empty buckets
 are undefined.  You should treat an undefined bucket as if it had 0 datapoints.
