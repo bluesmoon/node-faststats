@@ -89,7 +89,7 @@ Stats.prototype = {
 			var b;
 			if(this._config.buckets) {
 				for(b=0; b<this._config.buckets.length; b++) {
-					if(a <= this._config.buckets[b]) {
+					if(a < this._config.buckets[b]) {
 						break;
 					}
 				}
@@ -128,7 +128,7 @@ Stats.prototype = {
 			var b;
 			if(this._config.buckets) {
 				for(b=0; b<this._config.buckets.length; b++) {
-					if(a <= this._config.buckets[b]) {
+					if(a < this._config.buckets[b]) {
 						break;
 					}
 				}
@@ -267,7 +267,7 @@ Stats.prototype = {
 					count: (this.buckets[i]|0)
 				};
 
-				if(this.max <= this._config.buckets[i])
+				if(this.max < this._config.buckets[i])
 					break;
 			}
 			if(i == l && this.buckets[i])
