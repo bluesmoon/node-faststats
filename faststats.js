@@ -365,8 +365,13 @@ Stats.prototype = {
 		return this.band_pass(q1-fw, q3+fw, true);
 	},
 
-	band_pass: function(low, high, open) {
-		var i, j, b=new Stats(this._config), b_val;
+	band_pass: function(low, high, open, config) {
+		var i, j, b, b_val;
+
+		if(!config)
+			config = this._config;
+
+		b = new Stats(config);
 
 		if(this.length === 0)
 			return b;
@@ -420,8 +425,8 @@ Stats.prototype = {
 		return b;
 	},
 
-	copy: function() {
-		var b = this.band_pass(this.min, this.max);
+	copy: function(config) {
+		var b = this.band_pass(this.min, this.max, false, config);
 
 		b.sum = this.sum;
 		b.sum_of_squares = this.sum_of_squares;
@@ -446,6 +451,6 @@ if(process.argv[1] && process.argv[1].match(__filename)) {
 	Stats.prototype.push.apply(s, l);
 	console.log(s.data);
 	console.log(s.amean().toFixed(2), s.μ().toFixed(2), s.stddev().toFixed(2), s.σ().toFixed(2), s.gmean().toFixed(2), s.median().toFixed(2), s.moe().toFixed(2), s.distribution());
-	var t=s.copy();
+	var t=s.copy({buckets: [0, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 25, 30, 35] });
 	console.log(t.amean().toFixed(2), t.μ().toFixed(2), t.stddev().toFixed(2), t.σ().toFixed(2), t.gmean().toFixed(2), t.median().toFixed(2), t.moe().toFixed(2), t.distribution());
 }

@@ -173,6 +173,13 @@ s4 = s3.copy();
 assert.equal(s3.length, s4.length);
 ```
 
+Additionally, the `copy()` method can create a new `Stats` object with a different configuration.
+This is most useful if you need to change bucket sizes or precision.  Simply pass the new config
+object as a parameter to the `copy()` method:
+
+```javascript
+s4 = s3.copy({store_data: false, bucket_precision: 10 });
+
 ### Summaries & Averages
 
 The term _Average_ is overloaded in Statistics.  It relates to a summary of a data set, but says nothing about how
