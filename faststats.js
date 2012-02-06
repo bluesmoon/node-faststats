@@ -366,7 +366,7 @@ Stats.prototype = {
 	},
 
 	band_pass: function(low, high, open) {
-		var i, b=new Stats(this._config);
+		var i, j, b=new Stats(this._config), b_val;
 
 		if(this.length === 0)
 			return b;
@@ -381,12 +381,35 @@ Stats.prototype = {
 				}
 			}
 		}
-		else if(this.buckets) {
+		else if(this._config.buckets) {
+			for(i=0; i<=this._config.buckets.length; i++) {
+				if(this._config.buckets[i] < this.min)
+					continue;
+
+				b_val = (i==0?this.min:this._config.buckets[i-1]);
+				if(b_val < this.min)
+					b_val = this.min;
+				if(b_val > this.max)
+					b_val = this.max;
+
+				if(high < b_val || (open && high === b_val)) {
+					break;
+				}
+				if(low < b_val || (!open && low === b_val)) {
+					for(j=0; j<(this.buckets[i]|0); j++)
+						b.push(b_val);
+				}
+			}
+
+			b.min = low;
+			b.max = high;
+		}
+		else if(this._config.bucket_precision) {
 			low = Math.floor(low/this._config.bucket_precision);
 			high = Math.floor(high/this._config.bucket_precision)+1;
 
 			for(i=low; i<Math.min(this.buckets.length, high); i++) {
-				for(var j=0; j<(this.buckets[i]|0); j++)
+				for(j=0; j<(this.buckets[i]|0); j++)
 					b.push((i+0.5)*this._config.bucket_precision);
 			}
 
@@ -416,11 +439,13 @@ Stats.prototype.μ=Stats.prototype.amean;
 exports.Stats = Stats;
 
 if(process.argv[1] && process.argv[1].match(__filename)) {
-	var s = new Stats().push(1, 2, 3);
+	var s = new Stats({store_data:false, buckets: [ 1, 5, 10, 15, 20, 25, 30, 35 ]}).push(1, 2, 3);
 	var l = process.argv.slice(2);
 	if(!l.length) l = [10, 11, 15, 8, 13, 12, 19, 32, 17, 16];
 	l.forEach(function(e, i, a) { a[i] = parseFloat(e, 10); });
 	Stats.prototype.push.apply(s, l);
 	console.log(s.data);
-	console.log(s.amean().toFixed(2), s.μ().toFixed(2), s.stddev().toFixed(2), s.σ().toFixed(2), s.gmean().toFixed(2), s.median().toFixed(2), s.moe().toFixed(2));
+	console.log(s.amean().toFixed(2), s.μ().toFixed(2), s.stddev().toFixed(2), s.σ().toFixed(2), s.gmean().toFixed(2), s.median().toFixed(2), s.moe().toFixed(2), s.distribution());
+	var t=s.copy();
+	console.log(t.amean().toFixed(2), t.μ().toFixed(2), t.stddev().toFixed(2), t.σ().toFixed(2), t.gmean().toFixed(2), t.median().toFixed(2), t.moe().toFixed(2), t.distribution());
 }
