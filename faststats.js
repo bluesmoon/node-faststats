@@ -426,7 +426,7 @@ Stats.prototype = {
 	},
 
 	copy: function(config) {
-		var b = this.band_pass(this.min, this.max, false, config);
+		var b = Stats.prototype.band_pass.call(this, this.min, this.max, false, config);
 
 		b.sum = this.sum;
 		b.sum_of_squares = this.sum_of_squares;
