@@ -65,11 +65,7 @@ Stats.prototype = {
 	},
 
 	_reset_cache: function() {
-		this._amean = null;
-		this._gmean = null;
 		this._stddev = null;
-		this._gstddev = null;
-		this._moe = null;
 		this._data_sorted = null;
 	},
 
@@ -196,19 +192,13 @@ Stats.prototype = {
 	amean: function() {
 		if(this.length === 0)
 			return NaN;
-		if(this._amean === null)
-			this._amean = this.sum/this.length;
-
-		return this._amean;
+		return this.sum/this.length;
 	},
 
 	gmean: function() {
 		if(this.length === 0)
 			return NaN;
-		if(this._gmean === null)
-			this._gmean = Math.exp(this.sum_of_logs/this.length);
-
-		return this._gmean;
+		return Math.exp(this.sum_of_logs/this.length);
 	},
 
 	stddev: function() {
@@ -223,20 +213,14 @@ Stats.prototype = {
 	gstddev: function() {
 		if(this.length === 0)
 			return NaN;
-		if(this._gstddev === null)
-			this._gstddev = Math.exp(Math.sqrt(this.length * this.sum_of_square_of_logs - this.sum_of_logs*this.sum_of_logs)/this.length);
-
-		return this._gstddev;
+		return Math.exp(Math.sqrt(this.length * this.sum_of_square_of_logs - this.sum_of_logs*this.sum_of_logs)/this.length);
 	},
 
 	moe: function() {
 		if(this.length === 0)
 			return NaN;
 		// see http://en.wikipedia.org/wiki/Standard_error_%28statistics%29
-		if(this._moe === null)
-			this._moe = 1.96*this.stddev()/Math.sqrt(this.length);
-
-		return this._moe;
+		return 1.96*this.stddev()/Math.sqrt(this.length);
 	},
 
 	range: function() {
