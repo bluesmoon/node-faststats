@@ -418,6 +418,14 @@ Stats.prototype = {
 		b.sum_of_square_of_logs = this.sum_of_square_of_logs;
 
 		return b;
+	},
+
+	Σ: function() {
+		return this.sum;
+	},
+
+	Π: function() {
+		return Math.exp(this.sum_of_logs);
 	}
 };
 
