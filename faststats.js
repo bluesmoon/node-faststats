@@ -299,6 +299,11 @@ Stats.prototype = {
 		else
 			v = Math.floor(this.length*p/100);
 
+		if(v === 0)
+			return this.min;
+		if(v === this.length-1)
+			return this.max;
+
 		if(this._config.store_data) {
 			if(this._data_sorted === null)
 				this._data_sorted = this.data.slice(0).sort(asc);
@@ -311,7 +316,7 @@ Stats.prototype = {
 		else {
 			var j;
 			if(typeof v != 'number')
-				v = v[0];
+				v = (v[0]+v[1])/2;
 
 			if(this._config.buckets)
 				j=0;
@@ -327,10 +332,16 @@ Stats.prototype = {
 				v-=this.buckets[j];
 			}
 
-			if(this._config.buckets)
-				return ((j>0?this._config.buckets[j-1]:this.min) + (j<this._config.buckets.length?this._config.buckets[j]:this.max))/2;
-			else if(this._config.bucket_precision)
-				return (j+0.5)*this._config.bucket_precision;
+			var range = [], last_bucket_size = (j<this.buckets.length?this.buckets[j]:this.max);
+			if(this._config.buckets) {
+				range[0] = (j>0?this._config.buckets[j-1]:this.min);
+				range[1] = (j<this._config.buckets.length?this._config.buckets[j]:this.max);
+			}
+			else if(this._config.bucket_precision) {
+				range[0] = j*this._config.bucket_precision;
+				range[1] = (j+1)*this._config.bucket_precision;
+			}
+			return range[0] + (range[1] - range[0])*v/this.buckets[j];
 		}
 	},
 
