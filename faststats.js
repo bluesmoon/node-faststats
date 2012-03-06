@@ -23,6 +23,13 @@ var config_params = {
 		o.buckets = [];
 	},
 
+	bucket_extension_interval: function(o, s) {
+		if(typeof s != "number" || s<=0) {
+			throw "bucket_extension_interval must be a positive number";
+		}
+		o._config.bucket_extension_interval = s;
+	},
+
 	store_data: function(o, s) {
 		if(typeof s != "boolean") {
 			throw "store_data must be a true or false";
@@ -69,6 +76,30 @@ Stats.prototype = {
 		this._data_sorted = null;
 	},
 
+	_find_bucket: function(a) {
+		var b=0, e, l = this._config.buckets.length;
+		if(this._config.buckets) {
+			if(this._config.bucket_extension_interval && a >= this._config.buckets[l-1]) {
+				e=a-this._config.buckets[l-1];
+				b = parseInt(e/this._config.bucket_extension_interval) + l;
+				if(this._config.buckets[b] === undefined)
+					this._config.buckets[b] = this._config.buckets[l-1] + (parseInt(e/this._config.bucket_extension_interval)+1)*this._config.bucket_extension_interval;
+				if(this._config.buckets[b-1] === undefined)
+					this._config.buckets[b-1] = this._config.buckets[l-1] + parseInt(e/this._config.bucket_extension_interval)*this._config.bucket_extension_interval;
+			}
+			for(; b<l; b++) {
+				if(a < this._config.buckets[b]) {
+					break;
+				}
+			}
+		}
+		else if(this._config.bucket_precision) {
+			b = Math.floor(a/this._config.bucket_precision);
+		}
+
+		return b;
+	},
+
 	_add_cache: function(a) {
 		this.sum += a;
 		this.sum_of_squares += a*a;
@@ -82,17 +113,7 @@ Stats.prototype = {
 			this.min = a;
 
 		if(this.buckets) {
-			var b;
-			if(this._config.buckets) {
-				for(b=0; b<this._config.buckets.length; b++) {
-					if(a < this._config.buckets[b]) {
-						break;
-					}
-				}
-			}
-			else if(this._config.bucket_precision) {
-				b = Math.floor(a/this._config.bucket_precision);
-			}
+			var b = this._find_bucket(a);
 			this.buckets[b] = (this.buckets[b] || 0) + 1;
 		}
 
@@ -121,17 +142,7 @@ Stats.prototype = {
 		}
 
 		if(this.buckets) {
-			var b;
-			if(this._config.buckets) {
-				for(b=0; b<this._config.buckets.length; b++) {
-					if(a < this._config.buckets[b]) {
-						break;
-					}
-				}
-			}
-			else if(this._config.bucket_precision) {
-				b = Math.floor(a/this._config.bucket_precision);
-			}
+			var b=this._find_bucket(a);
 			this.buckets[b]--;
 			if(this.buckets[b] === 0)
 				delete this.buckets[b];
