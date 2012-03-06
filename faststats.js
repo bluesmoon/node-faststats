@@ -414,7 +414,7 @@ Stats.prototype = {
 				}
 				if(low < b_val || (!open && low === b_val)) {
 					for(j=0; j<(this.buckets[i]|0); j++) {
-						i_val = this._get_nth_in_bucket(j, i);
+						i_val = Stats.prototype._get_nth_in_bucket.call(this, j, i);
 						if( (i_val > low || (!open && i_val === low))
 							&& (i_val < high || (!open && i_val === high))
 						) {
@@ -433,7 +433,7 @@ Stats.prototype = {
 
 			for(i=low; i<Math.min(this.buckets.length, high); i++) {
 				for(j=0; j<(this.buckets[i]|0); j++)
-					i_val = this._get_nth_in_bucket(j, i);
+					i_val = Stats.prototype._get_nth_in_bucket.call(this, j, i);
 					if( (i_val > low || (!open && i_val === low))
 						&& (i_val < high || (!open && i_val === high))
 					) {
