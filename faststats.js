@@ -345,17 +345,21 @@ Stats.prototype = {
 				v-=this.buckets[j];
 			}
 
-			var range = [], last_bucket_size = (j<this.buckets.length?this.buckets[j]:this.max);
-			if(this._config.buckets) {
-				range[0] = (j>0?this._config.buckets[j-1]:this.min);
-				range[1] = (j<this._config.buckets.length?this._config.buckets[j]:this.max);
-			}
-			else if(this._config.bucket_precision) {
-				range[0] = j*this._config.bucket_precision;
-				range[1] = (j+1)*this._config.bucket_precision;
-			}
-			return range[0] + (range[1] - range[0])*v/this.buckets[j];
+			return this._get_nth_in_bucket(v, j);
 		}
+	},
+
+	_get_nth_in_bucket: function(n, b) {
+		var range = [];
+		if(this._config.buckets) {
+			range[0] = (b>0?this._config.buckets[b-1]:this.min);
+			range[1] = (b<this._config.buckets.length?this._config.buckets[b]:this.max);
+		}
+		else if(this._config.bucket_precision) {
+			range[0] = b*this._config.bucket_precision;
+			range[1] = (b+1)*this._config.bucket_precision;
+		}
+		return range[0] + (range[1] - range[0])*n/this.buckets[b];
 	},
 
 	median: function() {
@@ -374,7 +378,7 @@ Stats.prototype = {
 	},
 
 	band_pass: function(low, high, open, config) {
-		var i, j, b, b_val;
+		var i, j, b, b_val, i_val;
 
 		if(!config)
 			config = this._config;
@@ -409,13 +413,19 @@ Stats.prototype = {
 					break;
 				}
 				if(low < b_val || (!open && low === b_val)) {
-					for(j=0; j<(this.buckets[i]|0); j++)
-						b.push(b_val);
+					for(j=0; j<(this.buckets[i]|0); j++) {
+						i_val = this._get_nth_in_bucket(j, i);
+						if( (i_val > low || (!open && i_val === low))
+							&& (i_val < high || (!open && i_val === high))
+						) {
+							b.push(i_val);
+						}
+					}
 				}
 			}
 
-			b.min = low;
-			b.max = high;
+			b.min = Math.max(low, b.min);
+			b.max = Math.min(high, b.max);
 		}
 		else if(this._config.bucket_precision) {
 			low = Math.floor(low/this._config.bucket_precision);
@@ -426,8 +436,8 @@ Stats.prototype = {
 					b.push((i+0.5)*this._config.bucket_precision);
 			}
 
-			b.min = low;
-			b.max = high;
+			b.min = Math.max(low, b.min);
+			b.max = Math.min(high, b.max);
 		}
 
 		return b;
