@@ -252,7 +252,9 @@ Stats.prototype = {
 			j=this.min;
 			l=Math.min(this.buckets.length, this._config.buckets.length);
 
-			for(i=0; i<l; j=this._config.buckets[i++]) {
+			for(i=0; i<l; j=this._config.buckets[i++]) {	// this has to be i++ and not ++i
+				if(this._config.buckets[i] === undefined && this._config.bucket_extension_interval)
+					this._config.buckets[i] = this._config.buckets[i-1] + this._config.bucket_extension_interval;
 				if(this.min > this._config.buckets[i])
 					continue;
 
