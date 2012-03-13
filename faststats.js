@@ -24,6 +24,8 @@ var config_params = {
 	},
 
 	bucket_extension_interval: function(o, s) {
+		if(s === undefined)
+			return;
 		if(typeof s != "number" || s<=0) {
 			throw "bucket_extension_interval must be a positive number";
 		}
