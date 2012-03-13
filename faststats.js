@@ -339,7 +339,7 @@ Stats.prototype = {
 			for(; j<this.buckets.length; j++) {
 				if(!this.buckets[j])
 					continue;
-				if(v<this.buckets[j]) {
+				if(v<=this.buckets[j]) {
 					break;
 				}
 				v-=this.buckets[j];
