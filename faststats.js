@@ -320,7 +320,7 @@ Stats.prototype = {
 				if(this.max < this._config.buckets[i])
 					break;
 			}
-			if(i == l && this.buckets[i])
+			if(i == l && this.buckets[i]) {
 				d[i] = {
 					bucket: (j + this.max)/2,
 					range: [j, this.max],
@@ -332,6 +332,7 @@ Stats.prototype = {
 						d[i].tuple[k-1] = this.buckets[i][k]/d[i].count;
 					}
 				}
+			}
 		}
 		else if(this._config.bucket_precision) {
 			i=Math.floor(this.min/this._config.bucket_precision);
