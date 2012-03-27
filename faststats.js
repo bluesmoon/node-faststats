@@ -560,4 +560,9 @@ if(process.argv[1] && process.argv[1].match(__filename)) {
 
 	console.log(s.amean(), s.median());
 	console.log(s.distribution());
+
+	s.remove_tuple([1, 1, 3, 4]);
+	console.log(s.amean(), s.median());
+	console.log(s.distribution());
+
 }
