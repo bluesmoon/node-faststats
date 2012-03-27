@@ -8,7 +8,7 @@ function asc(a, b) { return a-b; }
 var config_params = {
 	bucket_precision: function(o, s) {
 		if(typeof s != "number" || s <= 0) {
-			throw "bucket_precision must be a positive number";
+			throw new Error("bucket_precision must be a positive number");
 		}
 		o._config.bucket_precision = s;
 		o.buckets = [];
@@ -16,7 +16,7 @@ var config_params = {
 
 	buckets: function(o, b) {
 		if(!Array.isArray(b) || b.length == 0) {
-			throw "buckets must be an array of bucket limits";
+			throw new Error("buckets must be an array of bucket limits");
 		}
 
 		o._config.buckets = b;
@@ -27,14 +27,14 @@ var config_params = {
 		if(s === undefined)
 			return;
 		if(typeof s != "number" || s<=0) {
-			throw "bucket_extension_interval must be a positive number";
+			throw new Error("bucket_extension_interval must be a positive number");
 		}
 		o._config.bucket_extension_interval = s;
 	},
 
 	store_data: function(o, s) {
 		if(typeof s != "boolean") {
-			throw "store_data must be a true or false";
+			throw new Error("store_data must be a true or false");
 		}
 		o._config.store_data = s;
 	}
@@ -246,7 +246,7 @@ Stats.prototype = {
 		if(this.length === 0)
 			return [];
 		if(!this.buckets)
-			throw "bucket_precision or buckets not configured.";
+			throw new Error("bucket_precision or buckets not configured.");
 
 		var d=[], j, i, l;
 
