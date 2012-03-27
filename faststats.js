@@ -103,6 +103,12 @@ Stats.prototype = {
 	},
 
 	_add_cache: function(a) {
+		var tuple=[], i;
+		if(a instanceof Array) {
+			tuple = a;
+			a = tuple.shift();
+		}
+
 		this.sum += a;
 		this.sum_of_squares += a*a;
 		this.sum_of_logs += Math.log(a);
@@ -116,13 +122,27 @@ Stats.prototype = {
 
 		if(this.buckets) {
 			var b = this._find_bucket(a);
-			this.buckets[b] = (this.buckets[b] || 0) + 1;
+			if(!this.buckets[b])
+				this.buckets[b] = [0];
+			if(tuple.length == 0)
+				this.buckets[b][0]++;
+			else
+				this.buckets[b][0] += tuple.shift();
+
+			for(i=0; i<tuple.length; i++)
+				this.buckets[b][i+1] = (this.buckets[b][i+1]|0) + (tuple[i]|0);
 		}
 
 		this._reset_cache();
 	},
 
 	_del_cache: function(a) {
+		var tuple=[], i;
+		if(a instanceof Array) {
+			tuple = a;
+			a = tuple.shift();
+		}
+
 		this.sum -= a;
 		this.sum_of_squares -= a*a;
 		this.sum_of_logs -= Math.log(a);
@@ -147,9 +167,16 @@ Stats.prototype = {
 
 		if(this.buckets) {
 			var b=this._find_bucket(a);
-			this.buckets[b]--;
-			if(this.buckets[b] === 0)
+			if(tuple.length == 0)
+				this.buckets[b][0]--;
+			else
+				this.buckets[b][0] -= tuple.shift();
+
+			if(this.buckets[b][0] === 0)
 				delete this.buckets[b];
+			else
+				for(i=0; i<tuple.length; i++)
+					this.buckets[b][i+1] = (this.buckets[b][i+1]|0) - (tuple[i]|0);
 		}
 
 		this._reset_cache();
@@ -169,6 +196,13 @@ Stats.prototype = {
 		return this;
 	},
 
+	push_tuple: function(tuple) {
+		if(!this.buckets) {
+			throw new Error("push_tuple is only valid when using buckets");
+		}
+		this._add_cache(tuple);
+	},
+
 	pop: function() {
 		if(this.length === 0 || this._config.store_data === false)
 			return undefined;
@@ -177,6 +211,13 @@ Stats.prototype = {
 		this._del_cache(a);
 
 		return a;
+	},
+
+	remove_tuple: function(tuple) {
+		if(!this.buckets) {
+			throw new Error("remove_tuple is only valid when using buckets");
+		}
+		this._del_cache(tuple);
 	},
 
 	unshift: function() {
@@ -250,7 +291,7 @@ Stats.prototype = {
 		if(!this.buckets)
 			throw new Error("bucket_precision or buckets not configured.");
 
-		var d=[], j, i, l;
+		var d=[], i, j, k, l;
 
 		if(this._config.buckets) {
 			j=this.min;
@@ -265,8 +306,14 @@ Stats.prototype = {
 				d[i] = {
 					bucket: (j+this._config.buckets[i])/2,
 					range: [j, this._config.buckets[i]],
-					count: (this.buckets[i]|0)
+					count: (this.buckets[i]?this.buckets[i][0]:0),
+					tuple: []
 				};
+				if(d[i].count) {
+					for(k=1; k<this.buckets[i].length; k++) {
+						d[i].tuple[k-1] = this.buckets[i][k]/d[i].count;
+					}
+				}
 
 				if(this.max < this._config.buckets[i])
 					break;
@@ -275,19 +322,32 @@ Stats.prototype = {
 				d[i] = {
 					bucket: (j + this.max)/2,
 					range: [j, this.max],
-					count: this.buckets[i]
+					count: this.buckets[i][0],
+					tuple: []
 				};
+				if(d[i].count) {
+					for(k=1; k<this.buckets[i].length; k++) {
+						d[i].tuple[k-1] = this.buckets[i][k]/d[i].count;
+					}
+				}
 		}
 		else if(this._config.bucket_precision) {
 			i=Math.floor(this.min/this._config.bucket_precision);
 			l=Math.floor(this.max/this._config.bucket_precision)+1;
 			for(j=0; i<l && i<this.buckets.length; i++, j++) {
-				if(this.buckets[i])
+				if(this.buckets[i]) {
 					d[j] = {
 						bucket: (i+0.5)*this._config.bucket_precision,
 						range: [i*this._config.bucket_precision, (i+1)*this._config.bucket_precision],
-						count: this.buckets[i]
+						count: this.buckets[i][0],
+						tuple: []
 					};
+					if(d[i].count) {
+						for(k=1; k<this.buckets[i].length; k++) {
+							d[i].tuple[k-1] = this.buckets[i][k]/d[i].count;
+						}
+					}
+				}
 			}
 		}
 
@@ -343,10 +403,10 @@ Stats.prototype = {
 			for(; j<this.buckets.length; j++) {
 				if(!this.buckets[j])
 					continue;
-				if(v<=this.buckets[j]) {
+				if(v<=this.buckets[j][0]) {
 					break;
 				}
-				v-=this.buckets[j];
+				v-=this.buckets[j][0];
 			}
 
 			return this._get_nth_in_bucket(v, j);
@@ -363,7 +423,7 @@ Stats.prototype = {
 			range[0] = b*this._config.bucket_precision;
 			range[1] = (b+1)*this._config.bucket_precision;
 		}
-		return range[0] + (range[1] - range[0])*n/this.buckets[b];
+		return range[0] + (range[1] - range[0])*n/this.buckets[b][0];
 	},
 
 	median: function() {
@@ -417,7 +477,7 @@ Stats.prototype = {
 					break;
 				}
 				if(low < b_val || (!open && low === b_val)) {
-					for(j=0; j<(this.buckets[i]|0); j++) {
+					for(j=0; j<(this.buckets[i]?this.buckets[i][0]:0); j++) {
 						i_val = Stats.prototype._get_nth_in_bucket.call(this, j, i);
 						if( (i_val > low || (!open && i_val === low))
 							&& (i_val < high || (!open && i_val === high))
@@ -436,7 +496,7 @@ Stats.prototype = {
 			high = Math.floor(high/this._config.bucket_precision)+1;
 
 			for(i=low; i<Math.min(this.buckets.length, high); i++) {
-				for(j=0; j<(this.buckets[i]|0); j++)
+				for(j=0; j<(this.buckets[i]?this.buckets[i][0]:0); j++)
 					i_val = Stats.prototype._get_nth_in_bucket.call(this, j, i);
 					if( (i_val > low || (!open && i_val === low))
 						&& (i_val < high || (!open && i_val === high))
@@ -488,4 +548,13 @@ if(process.argv[1] && process.argv[1].match(__filename)) {
 	console.log(s.amean().toFixed(2), s.μ().toFixed(2), s.stddev().toFixed(2), s.σ().toFixed(2), s.gmean().toFixed(2), s.median().toFixed(2), s.moe().toFixed(2), s.distribution());
 	var t=s.copy({buckets: [0, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 25, 30, 35] });
 	console.log(t.amean().toFixed(2), t.μ().toFixed(2), t.stddev().toFixed(2), t.σ().toFixed(2), t.gmean().toFixed(2), t.median().toFixed(2), t.moe().toFixed(2), t.distribution());
+
+	s = new Stats({store_data: false, buckets: [1, 5, 10, 15, 20, 25, 30, 35]});
+	s.push_tuple([1, 1, 3, 4]);
+	s.push_tuple([2, 1, 5, 8]);
+	s.push_tuple([3, 1, 4, 9]);
+	s.push_tuple([1, 1, 13, 14]);
+
+	console.log(s.amean(), s.median());
+	console.log(s.distribution());
 }
