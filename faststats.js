@@ -134,12 +134,14 @@ Stats.prototype = {
 		}
 		else if(this.max === a || this.min === a) {
 			var i = this.length-1;
-			this.max = this.min = this.data[i--];
-			while(i--) {
-				if(this.max < this.data[i])
-					this.max = this.data[i];
-				if(this.min > this.data[i])
-					this.min = this.data[i];
+			if(i>=0) {
+				this.max = this.min = this.data[i--];
+				while(i--) {
+					if(this.max < this.data[i])
+						this.max = this.data[i];
+					if(this.min > this.data[i])
+						this.min = this.data[i];
+				}
 			}
 		}
 
