@@ -149,18 +149,20 @@ Stats.prototype = {
 		this.sum_of_square_of_logs -= Math.pow(Math.log(a), 2);
 		this.length--;
 
-		if(this.length === 0) {
-			this.max = this.min = null;
-		}
-		else if(this.max === a || this.min === a) {
-			var i = this.length-1;
-			if(i>=0) {
-				this.max = this.min = this.data[i--];
-				while(i--) {
-					if(this.max < this.data[i])
-						this.max = this.data[i];
-					if(this.min > this.data[i])
-						this.min = this.data[i];
+		if(this._config.store_data) {
+			if(this.length === 0) {
+				this.max = this.min = null;
+			}
+			else if(this.max === a || this.min === a) {
+				var i = this.length-1;
+				if(i>=0) {
+					this.max = this.min = this.data[i--];
+					while(i--) {
+						if(this.max < this.data[i])
+							this.max = this.data[i];
+						if(this.min > this.data[i])
+							this.min = this.data[i];
+					}
 				}
 			}
 		}
