@@ -305,7 +305,7 @@ Stats.prototype = {
 					bucket: (j+this._config.buckets[i])/2,
 					range: [j, this._config.buckets[i]],
 					count: (this.buckets[i]?this.buckets[i][0]:0),
-					tuple: this.buckets[i].slice(1)
+					tuple: this.buckets[i]?this.buckets[i].slice(1):[]
 				};
 
 				if(this.max < this._config.buckets[i])
@@ -316,7 +316,7 @@ Stats.prototype = {
 					bucket: (j + this.max)/2,
 					range: [j, this.max],
 					count: this.buckets[i][0],
-					tuple: this.buckets[i].slice(1)
+					tuple: this.buckets[i]?this.buckets[i].slice(1):[]
 				};
 			}
 		}
@@ -331,7 +331,7 @@ Stats.prototype = {
 					bucket: (i+0.5)*this._config.bucket_precision,
 					range: [i*this._config.bucket_precision, (i+1)*this._config.bucket_precision],
 					count: this.buckets[i][0],
-					tuple: this.buckets[i].slice(1)
+					tuple: this.buckets[i]?this.buckets[i].slice(1):[]
 				};
 			}
 		}
