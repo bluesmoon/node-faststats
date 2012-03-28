@@ -305,13 +305,8 @@ Stats.prototype = {
 					bucket: (j+this._config.buckets[i])/2,
 					range: [j, this._config.buckets[i]],
 					count: (this.buckets[i]?this.buckets[i][0]:0),
-					tuple: []
+					tuple: this.buckets[i].slice(1)
 				};
-				if(d[i].count) {
-					for(k=1; k<this.buckets[i].length; k++) {
-						d[i].tuple[k-1] = this.buckets[i][k]/d[i].count;
-					}
-				}
 
 				if(this.max < this._config.buckets[i])
 					break;
@@ -321,32 +316,23 @@ Stats.prototype = {
 					bucket: (j + this.max)/2,
 					range: [j, this.max],
 					count: this.buckets[i][0],
-					tuple: []
+					tuple: this.buckets[i].slice(1)
 				};
-				if(d[i].count) {
-					for(k=1; k<this.buckets[i].length; k++) {
-						d[i].tuple[k-1] = this.buckets[i][k]/d[i].count;
-					}
-				}
 			}
 		}
 		else if(this._config.bucket_precision) {
 			i=Math.floor(this.min/this._config.bucket_precision);
 			l=Math.floor(this.max/this._config.bucket_precision)+1;
 			for(j=0; i<l && i<this.buckets.length; i++, j++) {
-				if(this.buckets[i]) {
-					d[j] = {
-						bucket: (i+0.5)*this._config.bucket_precision,
-						range: [i*this._config.bucket_precision, (i+1)*this._config.bucket_precision],
-						count: this.buckets[i][0],
-						tuple: []
-					};
-					if(d[i].count) {
-						for(k=1; k<this.buckets[i].length; k++) {
-							d[i].tuple[k-1] = this.buckets[i][k]/d[i].count;
-						}
-					}
+				if(!this.buckets[i]) {
+					continue;
 				}
+				d[j] = {
+					bucket: (i+0.5)*this._config.bucket_precision,
+					range: [i*this._config.bucket_precision, (i+1)*this._config.bucket_precision],
+					count: this.buckets[i][0],
+					tuple: this.buckets[i].slice(1)
+				};
 			}
 		}
 
