@@ -103,31 +103,30 @@ Stats.prototype = {
 	},
 
 	_add_cache: function(a) {
-		var tuple=[], i;
+		var tuple=[1], i;
 		if(a instanceof Array) {
 			tuple = a;
 			a = tuple.shift();
 		}
 
-		this.sum += a;
-		this.sum_of_squares += a*a;
-		this.sum_of_logs += Math.log(a);
-		this.sum_of_square_of_logs += Math.pow(Math.log(a), 2);
-		this.length++;
+		this.sum += a*tuple[0];
+		this.sum_of_squares += a*a*tuple[0];
+		this.sum_of_logs += Math.log(a)*tuple[0];
+		this.sum_of_square_of_logs += Math.pow(Math.log(a), 2)*tuple[0];
+		this.length += tuple[0];
 
-		if(this.max === null || this.max < a)
-			this.max = a;
-		if(this.min === null || this.min > a)
-			this.min = a;
+		if(tuple[0] > 0) {
+			if(this.max === null || this.max < a)
+				this.max = a;
+			if(this.min === null || this.min > a)
+				this.min = a;
+		}
 
 		if(this.buckets) {
 			var b = this._find_bucket(a);
 			if(!this.buckets[b])
 				this.buckets[b] = [0];
-			if(tuple.length == 0)
-				this.buckets[b][0]++;
-			else
-				this.buckets[b][0] += tuple.shift();
+			this.buckets[b][0] += tuple.shift();
 
 			for(i=0; i<tuple.length; i++)
 				this.buckets[b][i+1] = (this.buckets[b][i+1]|0) + (tuple[i]|0);
@@ -137,23 +136,23 @@ Stats.prototype = {
 	},
 
 	_del_cache: function(a) {
-		var tuple=[], i;
+		var tuple=[1], i;
 		if(a instanceof Array) {
 			tuple = a;
 			a = tuple.shift();
 		}
 
-		this.sum -= a;
-		this.sum_of_squares -= a*a;
-		this.sum_of_logs -= Math.log(a);
-		this.sum_of_square_of_logs -= Math.pow(Math.log(a), 2);
-		this.length--;
+		this.sum -= a*tuple[0];
+		this.sum_of_squares -= a*a*tuple[0];
+		this.sum_of_logs -= Math.log(a)*tuple[0];
+		this.sum_of_square_of_logs -= Math.pow(Math.log(a), 2)*tuple[0];
+		this.length -= tuple[0];
 
 		if(this._config.store_data) {
 			if(this.length === 0) {
 				this.max = this.min = null;
 			}
-			else if(this.max === a || this.min === a) {
+			else if(tuple[0] > 0 && (this.max === a || this.min === a)) {
 				var i = this.length-1;
 				if(i>=0) {
 					this.max = this.min = this.data[i--];
@@ -169,10 +168,7 @@ Stats.prototype = {
 
 		if(this.buckets) {
 			var b=this._find_bucket(a);
-			if(tuple.length == 0)
-				this.buckets[b][0]--;
-			else
-				this.buckets[b][0] -= tuple.shift();
+			this.buckets[b][0] -= tuple.shift();
 
 			if(this.buckets[b][0] === 0)
 				delete this.buckets[b];
