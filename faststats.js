@@ -168,13 +168,15 @@ Stats.prototype = {
 
 		if(this.buckets) {
 			var b=this._find_bucket(a);
-			this.buckets[b][0] -= tuple.shift();
+			if(this.buckets[b]) {
+				this.buckets[b][0] -= tuple.shift();
 
-			if(this.buckets[b][0] === 0)
-				delete this.buckets[b];
-			else
-				for(i=0; i<tuple.length; i++)
-					this.buckets[b][i+1] = (this.buckets[b][i+1]|0) - (tuple[i]|0);
+				if(this.buckets[b][0] === 0)
+					delete this.buckets[b];
+				else
+					for(i=0; i<tuple.length; i++)
+						this.buckets[b][i+1] = (this.buckets[b][i+1]|0) - (tuple[i]|0);
+			}
 		}
 
 		this._reset_cache();
