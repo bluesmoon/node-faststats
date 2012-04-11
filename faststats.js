@@ -220,18 +220,20 @@ Stats.prototype = {
 		this._del_cache(tuple);
 	},
 
-	reset_tuples: function() {
-		var b, l;
+	reset_tuples: function(tuple) {
+		var b, l, t, ts=tuple.length;
 		if(!this.buckets) {
 			throw new Error("reset_tuple is only valid when using buckets");
 		}
 
 		for(b=0, l=this.buckets.length; b<l; i++) {
-			if(this.buckets[b] && this.buckets[b][0] > 0) {
-				this.buckets[b] = [this.buckets[b][0]];
+			if(!this.buckets[b]) {
+				continue;
 			}
-			else {
-				delete this.buckets[b];
+			for(t=0; t<ts; t++) {
+				if(typeof tuple[t] !== 'undefined') {
+					this.buckets[b][t] = tuple[t];
+				}
 			}
 		}
 	}
