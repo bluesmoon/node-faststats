@@ -236,7 +236,7 @@ Stats.prototype = {
 				}
 			}
 		}
-	}
+	},
 
 	unshift: function() {
 		var i, a, args=Array.prototype.slice.call(arguments, 0);
