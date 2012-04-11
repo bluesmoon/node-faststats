@@ -226,7 +226,7 @@ Stats.prototype = {
 			throw new Error("reset_tuple is only valid when using buckets");
 		}
 
-		for(b=0, l=this.buckets.length; b<l; i++) {
+		for(b=0, l=this.buckets.length; b<l; b++) {
 			if(!this.buckets[b]) {
 				continue;
 			}
