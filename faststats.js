@@ -227,7 +227,7 @@ Stats.prototype = {
 		}
 
 		for(b=0, l=this.buckets.length; b<l; b++) {
-			if(!this.buckets[b]) {
+			if(!this.buckets[b] || this.buckets[b].length <= 1) {
 				continue;
 			}
 			for(t=0; t<ts; t++) {
