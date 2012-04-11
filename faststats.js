@@ -220,6 +220,22 @@ Stats.prototype = {
 		this._del_cache(tuple);
 	},
 
+	reset_tuples: function() {
+		var b, l;
+		if(!this.buckets) {
+			throw new Error("reset_tuple is only valid when using buckets");
+		}
+
+		for(b=0, l=this.buckets.length; b<l; i++) {
+			if(this.buckets[b] && this.buckets[b][0] > 0) {
+				this.buckets[b] = [this.buckets[b][0]];
+			}
+			else {
+				delete this.buckets[b];
+			}
+		}
+	}
+
 	unshift: function() {
 		var i, a, args=Array.prototype.slice.call(arguments, 0);
 		if(args.length && args[0] instanceof Array)
