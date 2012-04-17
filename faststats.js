@@ -41,8 +41,6 @@ var config_params = {
 };
 
 function Stats(c) {
-	this.reset();
-
 	this._config = { store_data:  true };
 
 	if(c) {
@@ -53,13 +51,17 @@ function Stats(c) {
 		}
 	}
 
+	this.reset();
+
 	return this;
 }
 
 Stats.prototype = {
 
 	reset: function() {
-		this.data = [];
+		if(this._config.store_data)
+			this.data = [];
+
 		this.length = 0;
 	
 		this.sum = 0;
@@ -75,7 +77,9 @@ Stats.prototype = {
 
 	_reset_cache: function() {
 		this._stddev = null;
-		this._data_sorted = null;
+
+		if(this._config.store_data)
+			this._data_sorted = null;
 	},
 
 	_find_bucket: function(a) {
