@@ -37,6 +37,13 @@ var config_params = {
 			throw new Error("store_data must be a true or false");
 		}
 		o._config.store_data = s;
+	},
+
+	sampling: function(o, s) {
+		if(typeof s != "boolean") {
+			throw new Error("sampling must be a true or false");
+		}
+		o._config.sampling = s;
 	}
 };
 
@@ -283,8 +290,11 @@ Stats.prototype = {
 	stddev: function() {
 		if(this.length === 0)
 			return NaN;
+		var n=this.length;
+		if(this._config.sampling)
+			n--;
 		if(this._stddev === null)
-			this._stddev = Math.sqrt(this.length * this.sum_of_squares - this.sum*this.sum)/this.length;
+			this._stddev = Math.sqrt((this.length * this.sum_of_squares - this.sum*this.sum)/(this.length*n));
 
 		return this._stddev;
 	},
@@ -292,7 +302,10 @@ Stats.prototype = {
 	gstddev: function() {
 		if(this.length === 0)
 			return NaN;
-		return Math.exp(Math.sqrt(this.length * this.sum_of_square_of_logs - this.sum_of_logs*this.sum_of_logs)/this.length);
+		var n=this.length;
+		if(this._config.sampling)
+			n--;
+		return Math.exp(Math.sqrt((this.length * this.sum_of_square_of_logs - this.sum_of_logs*this.sum_of_logs)/(this.length*n)));
 	},
 
 	moe: function() {
