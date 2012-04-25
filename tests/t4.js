@@ -38,5 +38,5 @@ d.forEach(function(e) {
 	}
 });
 
-assert.equal(s1.median(), 10.5);
+assert.equal(s1.median(), 8+(13-8)*1.5/5);	// median approximated to low bound of bucket + position in bucket where item might fall
 
