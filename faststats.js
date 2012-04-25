@@ -83,8 +83,9 @@ Stats.prototype = {
 	},
 
 	_find_bucket: function(a) {
-		var b=0, e, l = this._config.buckets.length;
+		var b=0, e, l;
 		if(this._config.buckets) {
+			l = this._config.buckets.length;
 			if(this._config.bucket_extension_interval && a >= this._config.buckets[l-1]) {
 				e=a-this._config.buckets[l-1];
 				b = parseInt(e/this._config.bucket_extension_interval) + l;
