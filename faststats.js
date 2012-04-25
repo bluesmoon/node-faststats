@@ -502,17 +502,18 @@ Stats.prototype = {
 			b.max = Math.min(high, b.max);
 		}
 		else if(this._config.bucket_precision) {
-			low = Math.floor(low/this._config.bucket_precision);
-			high = Math.floor(high/this._config.bucket_precision)+1;
+			var low_i = Math.floor(low/this._config.bucket_precision),
+			    high_i = Math.floor(high/this._config.bucket_precision)+1;
 
-			for(i=low; i<Math.min(this.buckets.length, high); i++) {
-				for(j=0; j<(this.buckets[i]?this.buckets[i][0]:0); j++)
+			for(i=low_i; i<Math.min(this.buckets.length, high_i); i++) {
+				for(j=0; j<(this.buckets[i]?this.buckets[i][0]:0); j++) {
 					i_val = Stats.prototype._get_nth_in_bucket.call(this, j, i);
 					if( (i_val > low || (!open && i_val === low))
 						&& (i_val < high || (!open && i_val === high))
 					) {
 						b.push(i_val);
 					}
+				}
 			}
 
 			b.min = Math.max(low, b.min);
