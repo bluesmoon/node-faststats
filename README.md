@@ -323,7 +323,9 @@ d.forEach(function(e) {
 	}
 });
 ```
+
 Using custom buckets instead:
+
 ```javascript
 var assert = require('assert'),
     Stats = require('fast-stats').Stats;
@@ -352,8 +354,8 @@ d.forEach(function(e) {
 			break;
 		default: assert.fail(e.bucket, "", "", "Unexpected bucket");
 	}
-});```
-
+});
+```
 
 ### Data Accuracy
 
