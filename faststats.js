@@ -430,8 +430,8 @@ Stats.prototype = {
 			range[1] = (b<this._config.buckets.length?this._config.buckets[b]:this.max);
 		}
 		else if(this._config.bucket_precision) {
-			range[0] = b*this._config.bucket_precision;
-			range[1] = (b+1)*this._config.bucket_precision;
+			range[0] = Math.max(b*this._config.bucket_precision, this.min);
+			range[1] = Math.min((b+1)*this._config.bucket_precision, this.max);
 		}
 		return range[0] + (range[1] - range[0])*n/this.buckets[b][0];
 	},
