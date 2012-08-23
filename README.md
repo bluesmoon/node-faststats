@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/bluesmoon/node-faststats.png)](http://travis-ci.org/bluesmoon/node-faststats)
 Fast Statistics
 ===============
 
