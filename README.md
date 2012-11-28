@@ -133,7 +133,7 @@ method is useful to restrict how precise we want our comparison to be.  Be aware
 
 `fast-stats` does not use the `toFixed()` method internally.
 
-The `push()` and `unshift()` methods return the the object.
+The `push()` and `unshift()` methods return the `this` object.
 
 #### Removing data
 
