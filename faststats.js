@@ -75,6 +75,7 @@ Stats.prototype = {
 		this.sum_of_squares = 0;
 		this.sum_of_logs = 0;
 		this.sum_of_square_of_logs = 0;
+		this.zeroes = 0;
 		this.max = this.min = null;
 	
 		this._reset_cache();
@@ -123,8 +124,13 @@ Stats.prototype = {
 
 		this.sum += a*tuple[0];
 		this.sum_of_squares += a*a*tuple[0];
-		this.sum_of_logs += Math.log(a)*tuple[0];
-		this.sum_of_square_of_logs += Math.pow(Math.log(a), 2)*tuple[0];
+		if(a === 0) {
+			this.zeroes++;
+		}
+		else {
+			this.sum_of_logs += Math.log(a)*tuple[0];
+			this.sum_of_square_of_logs += Math.pow(Math.log(a), 2)*tuple[0];
+		}
 		this.length += tuple[0];
 
 		if(tuple[0] > 0) {
@@ -156,19 +162,27 @@ Stats.prototype = {
 
 		this.sum -= a*tuple[0];
 		this.sum_of_squares -= a*a*tuple[0];
-		this.sum_of_logs -= Math.log(a)*tuple[0];
-		this.sum_of_square_of_logs -= Math.pow(Math.log(a), 2)*tuple[0];
+		if(a === 0) {
+			this.zeroes--;
+		}
+		else {
+			this.sum_of_logs -= Math.log(a)*tuple[0];
+			this.sum_of_square_of_logs -= Math.pow(Math.log(a), 2)*tuple[0];
+		}
 		this.length -= tuple[0];
 
 		if(this._config.store_data) {
 			if(this.length === 0) {
 				this.max = this.min = null;
 			}
+			if(this.length === 1) {
+				this.max = this.min = this.data[0];
+			}
 			else if(tuple[0] > 0 && (this.max === a || this.min === a)) {
 				var i = this.length-1;
 				if(i>=0) {
 					this.max = this.min = this.data[i--];
-					while(i--) {
+					while(i-- >= 0) {
 						if(this.max < this.data[i])
 							this.max = this.data[i];
 						if(this.min > this.data[i])
@@ -284,6 +298,8 @@ Stats.prototype = {
 	gmean: function() {
 		if(this.length === 0)
 			return NaN;
+		if(this.zeroes > 0)
+			return NaN;
 		return Math.exp(this.sum_of_logs/this.length);
 	},
 
@@ -301,6 +317,8 @@ Stats.prototype = {
 
 	gstddev: function() {
 		if(this.length === 0)
+			return NaN;
+		if(this.zeroes > 0)
 			return NaN;
 		var n=this.length;
 		if(this._config.sampling)
@@ -543,6 +561,7 @@ Stats.prototype = {
 		b.sum_of_squares = this.sum_of_squares;
 		b.sum_of_logs = this.sum_of_logs;
 		b.sum_of_square_of_logs = this.sum_of_square_of_logs;
+		b.zeroes = this.zeroes;
 
 		return b;
 	},
@@ -552,7 +571,7 @@ Stats.prototype = {
 	},
 
 	Π: function() {
-		return Math.exp(this.sum_of_logs);
+		return this.zeroes > 0 ? 0 : Math.exp(this.sum_of_logs);
 	}
 };
 
