@@ -179,6 +179,7 @@ object as a parameter to the `copy()` method:
 
 ```javascript
 s4 = s3.copy({store_data: false, bucket_precision: 10 });
+```
 
 ### Summaries & Averages
 
