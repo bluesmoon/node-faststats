@@ -76,6 +76,11 @@ The following configuration options are recognised.  All of them are optional.
     for all other buckets is the upper limit of the previous bucket.
 
     If you use both `bucket_precision` and `buckets`, `buckets` takes precedence.
+    
+ *  `bucket_extension_interval`: *[number]* Tells `fast-stats` how to extend the pre-defined buckets if data exceeding the range is added.  This is useful to capture data above your range, in multiple buckets, but with low precision so you do not end up with a large number of empty buckets.
+
+    By default this is not defined, so buckets will not be extended and all data beyond the end range will end up in the last bucket.  
+ 
 
  *  `store_data`: *[boolean]* Tells `fast-stats` not to store actual data values. This is useful to reduce memory utilisation
     for large datasets, however it comes with a few caveats.
@@ -91,6 +96,10 @@ The following configuration options are recognised.  All of them are optional.
     percentile value, set this option to false.
 
     By default, `store_data` is `true`.
+    
+ *  `sampling`: *[boolean]* Tells `fast-stats` whether the data you pass in is a sample (`true`) or the entire (`false` default) population.
+
+    The standard deviation algorithm differs for populations v/s samples.
 
 
 ### Getting data in and out
