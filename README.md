@@ -390,7 +390,7 @@ spreads.
 
 #### Geometric Standard Deviation
 
-The geometric mean tells you the spread of your data if it follows a log-normal or exponential distribution.
+The geometric standard deviation tells you the spread of your data if it follows a log-normal or exponential distribution.
 Use the `gstddev()` method to get at it.
 
 ```javascript
