@@ -210,7 +210,7 @@ assert.equal(a.toFixed(2), "4.67");   // remember we popped out the last item of
 
 #### Geometric Mean
 
-The arithmetic mean is the `n`th root of the product of all data points where n is the number of data points. This is useful
+The geometric mean is the `n`th root of the product of all data points where n is the number of data points. This is useful
 for data sets that follow an exponential or log-normal distribution.  Use the `gmean()` method to get at it:
 
 ```javascript
@@ -390,7 +390,7 @@ spreads.
 
 #### Geometric Standard Deviation
 
-The geometric mean tells you the spread of your data if it follows a log-normal or exponential distribution.
+The geometric standard deviation tells you the spread of your data if it follows a log-normal or exponential distribution.
 Use the `gstddev()` method to get at it.
 
 ```javascript
