@@ -26,7 +26,7 @@ var config_params = {
 	bucket_extension_interval: function(o, s) {
 		if(s === undefined)
 			return;
-		if(typeof s != "number" || s<=0) {
+		if(typeof s != "number" || s <= 0) {
 			throw new Error("bucket_extension_interval must be a positive number");
 		}
 		o._config.bucket_extension_interval = s;
@@ -91,45 +91,45 @@ Stats.prototype = {
 	},
 
 	_find_bucket: function(a) {
-		var b=0, e, l;
+		var b = 0, e, l;
 		if(this._config.buckets) {
 			l = this._config.buckets.length;
-			if(this._config.bucket_extension_interval && a >= this._config.buckets[l-1]) {
-				e=a-this._config.buckets[l-1];
-				b = parseInt(e/this._config.bucket_extension_interval) + l;
+			if(this._config.bucket_extension_interval && a >= this._config.buckets[l - 1]) {
+				e = a - this._config.buckets[l - 1];
+				b = parseInt(e / this._config.bucket_extension_interval) + l;
 				if(this._config.buckets[b] === undefined)
-					this._config.buckets[b] = this._config.buckets[l-1] + (parseInt(e/this._config.bucket_extension_interval)+1)*this._config.bucket_extension_interval;
-				if(this._config.buckets[b-1] === undefined)
-					this._config.buckets[b-1] = this._config.buckets[l-1] + parseInt(e/this._config.bucket_extension_interval)*this._config.bucket_extension_interval;
+					this._config.buckets[b] = this._config.buckets[l - 1] + (parseInt(e / this._config.bucket_extension_interval) + 1) * this._config.bucket_extension_interval;
+				if(this._config.buckets[b - 1] === undefined)
+					this._config.buckets[b - 1] = this._config.buckets[l - 1] + parseInt(e / this._config.bucket_extension_interval) * this._config.bucket_extension_interval;
 			}
-			for(; b<l; b++) {
+			for(; b < l; b++) {
 				if(a < this._config.buckets[b]) {
 					break;
 				}
 			}
 		}
 		else if(this._config.bucket_precision) {
-			b = Math.floor(a/this._config.bucket_precision);
+			b = Math.floor(a / this._config.bucket_precision);
 		}
 
 		return b;
 	},
 
 	_add_cache: function(a) {
-		var tuple=[1], i;
+		var tuple = [1], i;
 		if(a instanceof Array) {
 			tuple = a;
 			a = tuple.shift();
 		}
 
-		this.sum += a*tuple[0];
-		this.sum_of_squares += a*a*tuple[0];
+		this.sum += a * tuple[0];
+		this.sum_of_squares += a * a * tuple[0];
 		if(a === 0) {
 			this.zeroes++;
 		}
 		else {
-			this.sum_of_logs += Math.log(a)*tuple[0];
-			this.sum_of_square_of_logs += Math.pow(Math.log(a), 2)*tuple[0];
+			this.sum_of_logs += Math.log(a) * tuple[0];
+			this.sum_of_square_of_logs += Math.pow(Math.log(a), 2) * tuple[0];
 		}
 		this.length += tuple[0];
 
@@ -146,8 +146,8 @@ Stats.prototype = {
 				this.buckets[b] = [0];
 			this.buckets[b][0] += tuple.shift();
 
-			for(i=0; i<tuple.length; i++)
-				this.buckets[b][i+1] = (this.buckets[b][i+1]|0) + (tuple[i]|0);
+			for(i = 0; i < tuple.length; i++)
+				this.buckets[b][i + 1] = (this.buckets[b][i + 1]|0) + (tuple[i] | 0);
 		}
 
 		this._reset_cache();
@@ -160,14 +160,14 @@ Stats.prototype = {
 			a = tuple.shift();
 		}
 
-		this.sum -= a*tuple[0];
-		this.sum_of_squares -= a*a*tuple[0];
+		this.sum -= a * tuple[0];
+		this.sum_of_squares -= a * a * tuple[0];
 		if(a === 0) {
 			this.zeroes--;
 		}
 		else {
-			this.sum_of_logs -= Math.log(a)*tuple[0];
-			this.sum_of_square_of_logs -= Math.pow(Math.log(a), 2)*tuple[0];
+			this.sum_of_logs -= Math.log(a) * tuple[0];
+			this.sum_of_square_of_logs -= Math.pow(Math.log(a), 2) * tuple[0];
 		}
 		this.length -= tuple[0];
 
@@ -179,7 +179,7 @@ Stats.prototype = {
 				this.max = this.min = this.data[0];
 			}
 			else if(tuple[0] > 0 && (this.max === a || this.min === a)) {
-				var i = this.length-1;
+				var i = this.length - 1;
 				if(i>=0) {
 					this.max = this.min = this.data[i--];
 					while(i-- >= 0) {
@@ -193,7 +193,7 @@ Stats.prototype = {
 		}
 
 		if(this.buckets) {
-			var b=this._find_bucket(a);
+			var b = this._find_bucket(a);
 			if(this.buckets[b]) {
 				this.buckets[b][0] -= tuple.shift();
 
@@ -201,7 +201,7 @@ Stats.prototype = {
 					delete this.buckets[b];
 				else
 					for(i=0; i<tuple.length; i++)
-						this.buckets[b][i+1] = (this.buckets[b][i+1]|0) - (tuple[i]|0);
+						this.buckets[b][i + 1] = (this.buckets[b][i + 1] | 0) - (tuple[i] | 0);
 			}
 		}
 
@@ -209,10 +209,10 @@ Stats.prototype = {
 	},
 
 	push: function() {
-		var i, a, args=Array.prototype.slice.call(arguments, 0);
+		var i, a, args = Array.prototype.slice.call(arguments, 0);
 		if(args.length && args[0] instanceof Array)
 			args = args[0];
-		for(i=0; i<args.length; i++) {
+		for(i = 0; i < args.length; i++) {
 			a = args[i];
 			if(this._config.store_data)
 				this.data.push(a);
@@ -247,16 +247,16 @@ Stats.prototype = {
 	},
 
 	reset_tuples: function(tuple) {
-		var b, l, t, ts=tuple.length;
+		var b, l, t, ts = tuple.length;
 		if(!this.buckets) {
 			throw new Error("reset_tuple is only valid when using buckets");
 		}
 
-		for(b=0, l=this.buckets.length; b<l; b++) {
+		for(b = 0, l = this.buckets.length; b < l; b++) {
 			if(!this.buckets[b] || this.buckets[b].length <= 1) {
 				continue;
 			}
-			for(t=0; t<ts; t++) {
+			for(t = 0; t < ts; t++) {
 				if(typeof tuple[t] !== 'undefined') {
 					this.buckets[b][t] = tuple[t];
 				}
@@ -265,10 +265,10 @@ Stats.prototype = {
 	},
 
 	unshift: function() {
-		var i, a, args=Array.prototype.slice.call(arguments, 0);
+		var i, a, args = Array.prototype.slice.call(arguments, 0);
 		if(args.length && args[0] instanceof Array)
 			args = args[0];
-		i=args.length;
+		i = args.length;
 		while(i--) {
 			a = args[i];
 			if(this._config.store_data)
@@ -292,7 +292,7 @@ Stats.prototype = {
 	amean: function() {
 		if(this.length === 0)
 			return NaN;
-		return this.sum/this.length;
+		return this.sum / this.length;
 	},
 
 	gmean: function() {
@@ -300,7 +300,7 @@ Stats.prototype = {
 			return NaN;
 		if(this.zeroes > 0)
 			return NaN;
-		return Math.exp(this.sum_of_logs/this.length);
+		return Math.exp(this.sum_of_logs / this.length);
 	},
 
 	stddev: function() {
@@ -310,7 +310,7 @@ Stats.prototype = {
 		if(this._config.sampling)
 			n--;
 		if(this._stddev === null)
-			this._stddev = Math.sqrt((this.length * this.sum_of_squares - this.sum*this.sum)/(this.length*n));
+			this._stddev = Math.sqrt((this.length * this.sum_of_squares - this.sum * this.sum) / (this.length * n));
 
 		return this._stddev;
 	},
@@ -320,17 +320,17 @@ Stats.prototype = {
 			return NaN;
 		if(this.zeroes > 0)
 			return NaN;
-		var n=this.length;
+		var n = this.length;
 		if(this._config.sampling)
 			n--;
-		return Math.exp(Math.sqrt((this.length * this.sum_of_square_of_logs - this.sum_of_logs*this.sum_of_logs)/(this.length*n)));
+		return Math.exp(Math.sqrt((this.length * this.sum_of_square_of_logs - this.sum_of_logs * this.sum_of_logs) / (this.length * n)));
 	},
 
 	moe: function() {
 		if(this.length === 0)
 			return NaN;
 		// see http://en.wikipedia.org/wiki/Standard_error_%28statistics%29
-		return 1.96*this.stddev()/Math.sqrt(this.length);
+		return 1.96 * this.stddev() / Math.sqrt(this.length);
 	},
 
 	range: function() {
@@ -348,20 +348,20 @@ Stats.prototype = {
 		var d=[], i, j, k, l;
 
 		if(this._config.buckets) {
-			j=this.min;
-			l=Math.min(this.buckets.length, this._config.buckets.length);
+			j = this.min;
+			l = Math.min(this.buckets.length, this._config.buckets.length);
 
-			for(i=0; i<l; j=this._config.buckets[i++]) {	// this has to be i++ and not ++i
+			for(i = 0; i < l; j = this._config.buckets[i++]) {	// this has to be i++ and not ++i
 				if(this._config.buckets[i] === undefined && this._config.bucket_extension_interval)
-					this._config.buckets[i] = this._config.buckets[i-1] + this._config.bucket_extension_interval;
+					this._config.buckets[i] = this._config.buckets[i - 1] + this._config.bucket_extension_interval;
 				if(this.min > this._config.buckets[i])
 					continue;
 
 				d[i] = {
-					bucket: (j+this._config.buckets[i])/2,
+					bucket: (j + this._config.buckets[i]) / 2,
 					range: [j, this._config.buckets[i]],
-					count: (this.buckets[i]?this.buckets[i][0]:0),
-					tuple: this.buckets[i]?this.buckets[i].slice(1):[]
+					count: (this.buckets[i] ? this.buckets[i][0] : 0),
+					tuple: this.buckets[i] ? this.buckets[i].slice(1) : []
 				};
 
 				if(this.max < this._config.buckets[i])
@@ -369,25 +369,25 @@ Stats.prototype = {
 			}
 			if(i == l && this.buckets[i]) {
 				d[i] = {
-					bucket: (j + this.max)/2,
+					bucket: (j + this.max) / 2,
 					range: [j, this.max],
 					count: this.buckets[i][0],
-					tuple: this.buckets[i]?this.buckets[i].slice(1):[]
+					tuple: this.buckets[i] ? this.buckets[i].slice(1) : []
 				};
 			}
 		}
 		else if(this._config.bucket_precision) {
-			i=Math.floor(this.min/this._config.bucket_precision);
-			l=Math.floor(this.max/this._config.bucket_precision)+1;
-			for(j=0; i<l && i<this.buckets.length; i++, j++) {
+			i = Math.floor(this.min / this._config.bucket_precision);
+			l = Math.floor(this.max / this._config.bucket_precision) + 1;
+			for(j = 0; i < l && i < this.buckets.length; i++, j++) {
 				if(!this.buckets[i]) {
 					continue;
 				}
 				d[j] = {
-					bucket: (i+0.5)*this._config.bucket_precision,
-					range: [i*this._config.bucket_precision, (i+1)*this._config.bucket_precision],
+					bucket: (i + 0.5) * this._config.bucket_precision,
+					range: [i * this._config.bucket_precision, (i + 1) * this._config.bucket_precision],
 					count: this.buckets[i][0],
-					tuple: this.buckets[i]?this.buckets[i].slice(1):[]
+					tuple: this.buckets[i] ? this.buckets[i].slice(1) : []
 				};
 			}
 		}
@@ -407,19 +407,19 @@ Stats.prototype = {
 		if(p <=  0)
 			v=0;
 		else if(p == 25)
-			v = [Math.floor((this.length-1)*0.25), Math.ceil((this.length-1)*0.25)];
+			v = [Math.floor((this.length - 1) * 0.25), Math.ceil((this.length - 1) * 0.25)];
 		else if(p == 50)
-			v = [Math.floor((this.length-1)*0.5), Math.ceil((this.length-1)*0.5)];
+			v = [Math.floor((this.length-1) * 0.5), Math.ceil((this.length - 1) * 0.5)];
 		else if(p == 75)
-			v = [Math.floor((this.length-1)*0.75), Math.ceil((this.length-1)*0.75)];
+			v = [Math.floor((this.length-1) * 0.75), Math.ceil((this.length - 1) * 0.75)];
 		else if(p >= 100)
-			v = this.length-1;
+			v = this.length - 1;
 		else
-			v = Math.floor(this.length*p/100);
+			v = Math.floor(this.length * p / 100);
 
 		if(v === 0)
 			return this.min;
-		if(v === this.length-1)
+		if(v === this.length - 1)
 			return this.max;
 
 		if(this._config.store_data) {
@@ -429,25 +429,25 @@ Stats.prototype = {
 			if(typeof v == 'number')
 				return this._data_sorted[v];
 			else
-				return (this._data_sorted[v[0]] + this._data_sorted[v[1]])/2;
+				return (this._data_sorted[v[0]] + this._data_sorted[v[1]]) / 2;
 		}
 		else {
 			var j;
 			if(typeof v != 'number')
-				v = (v[0]+v[1])/2;
+				v = (v[0] + v[1]) / 2;
 
 			if(this._config.buckets)
-				j=0;
+				j = 0;
 			else if(this._config.bucket_precision)
-				j = Math.floor(this.min/this._config.bucket_precision);
+				j = Math.floor(this.min / this._config.bucket_precision);
 
-			for(; j<this.buckets.length; j++) {
+			for(; j < this.buckets.length; j++) {
 				if(!this.buckets[j])
 					continue;
-				if(v<=this.buckets[j][0]) {
+				if(v <= this.buckets[j][0]) {
 					break;
 				}
-				v-=this.buckets[j][0];
+				v -= this.buckets[j][0];
 			}
 
 			return this._get_nth_in_bucket(v, j);
@@ -457,14 +457,14 @@ Stats.prototype = {
 	_get_nth_in_bucket: function(n, b) {
 		var range = [];
 		if(this._config.buckets) {
-			range[0] = (b>0?this._config.buckets[b-1]:this.min);
-			range[1] = (b<this._config.buckets.length?this._config.buckets[b]:this.max);
+			range[0] = (b > 0 ? this._config.buckets[b - 1] : this.min);
+			range[1] = (b < this._config.buckets.length ? this._config.buckets[b] : this.max);
 		}
 		else if(this._config.bucket_precision) {
-			range[0] = Math.max(b*this._config.bucket_precision, this.min);
-			range[1] = Math.min((b+1)*this._config.bucket_precision, this.max);
+			range[0] = Math.max(b * this._config.bucket_precision, this.min);
+			range[1] = Math.min((b + 1) * this._config.bucket_precision, this.max);
 		}
-		return range[0] + (range[1] - range[0])*n/this.buckets[b][0];
+		return range[0] + (range[1] - range[0]) * n / this.buckets[b][0];
 	},
 
 	median: function() {
@@ -477,9 +477,9 @@ Stats.prototype = {
 		q1 = this.percentile(25);
 		q3 = this.percentile(75);
 	
-		fw = (q3-q1)*1.5;
+		fw = (q3 - q1) * 1.5;
 	
-		return this.band_pass(q1-fw, q3+fw, true);
+		return this.band_pass(q1 - fw, q3 + fw, true);
 	},
 
 	band_pass: function(low, high, open, config) {
@@ -497,18 +497,18 @@ Stats.prototype = {
 			if(this._data_sorted === null)
 				this._data_sorted = this.data.slice(0).sort(asc);
 	
-			for(i=0; i<this.length && (this._data_sorted[i] < high || (!open && this._data_sorted[i] === high)); i++) {
+			for(i = 0; i < this.length && (this._data_sorted[i] < high || (!open && this._data_sorted[i] === high)); i++) {
 				if(this._data_sorted[i] > low || (!open && this._data_sorted[i] === low)) {
 					b.push(this._data_sorted[i]);
 				}
 			}
 		}
 		else if(this._config.buckets) {
-			for(i=0; i<=this._config.buckets.length; i++) {
+			for(i = 0; i <= this._config.buckets.length; i++) {
 				if(this._config.buckets[i] < this.min)
 					continue;
 
-				b_val = (i==0?this.min:this._config.buckets[i-1]);
+				b_val = (i == 0 ? this.min : this._config.buckets[i - 1]);
 				if(b_val < this.min)
 					b_val = this.min;
 				if(b_val > this.max)
@@ -518,7 +518,7 @@ Stats.prototype = {
 					break;
 				}
 				if(low < b_val || (!open && low === b_val)) {
-					for(j=0; j<(this.buckets[i]?this.buckets[i][0]:0); j++) {
+					for(j = 0; j < (this.buckets[i] ? this.buckets[i][0]:0); j++) {
 						i_val = Stats.prototype._get_nth_in_bucket.call(this, j, i);
 						if( (i_val > low || (!open && i_val === low))
 							&& (i_val < high || (!open && i_val === high))
@@ -533,11 +533,11 @@ Stats.prototype = {
 			b.max = Math.min(high, b.max);
 		}
 		else if(this._config.bucket_precision) {
-			var low_i = Math.floor(low/this._config.bucket_precision),
-			    high_i = Math.floor(high/this._config.bucket_precision)+1;
+			var low_i = Math.floor(low / this._config.bucket_precision),
+			    high_i = Math.floor(high / this._config.bucket_precision) + 1;
 
-			for(i=low_i; i<Math.min(this.buckets.length, high_i); i++) {
-				for(j=0; j<(this.buckets[i]?this.buckets[i][0]:0); j++) {
+			for(i = low_i; i < Math.min(this.buckets.length, high_i); i++) {
+				for(j = 0; j < (this.buckets[i] ? this.buckets[i][0] : 0); j++) {
 					i_val = Stats.prototype._get_nth_in_bucket.call(this, j, i);
 					if( (i_val > low || (!open && i_val === low))
 						&& (i_val < high || (!open && i_val === high))
@@ -575,8 +575,8 @@ Stats.prototype = {
 	}
 };
 
-Stats.prototype.σ=Stats.prototype.stddev;
-Stats.prototype.μ=Stats.prototype.amean;
+Stats.prototype.σ = Stats.prototype.stddev;
+Stats.prototype.μ = Stats.prototype.amean;
 
 
 exports.Stats = Stats;
@@ -589,7 +589,7 @@ if(process.argv[1] && process.argv[1].match(__filename)) {
 	Stats.prototype.push.apply(s, l);
 	console.log(s.data);
 	console.log(s.amean().toFixed(2), s.μ().toFixed(2), s.stddev().toFixed(2), s.σ().toFixed(2), s.gmean().toFixed(2), s.median().toFixed(2), s.moe().toFixed(2), s.distribution());
-	var t=s.copy({buckets: [0, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 25, 30, 35] });
+	var t = s.copy({buckets: [0, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 25, 30, 35] });
 	console.log(t.amean().toFixed(2), t.μ().toFixed(2), t.stddev().toFixed(2), t.σ().toFixed(2), t.gmean().toFixed(2), t.median().toFixed(2), t.moe().toFixed(2), t.distribution());
 
 	s = new Stats({store_data: false, buckets: [1, 5, 10, 15, 20, 25, 30, 35]});
