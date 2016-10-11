@@ -479,7 +479,7 @@ Stats.prototype = {
 	
 		fw = (q3-q1)*1.5;
 	
-		return this.band_pass(q1-fw, q3+fw, true);
+		return this.band_pass(q1-fw, q3+fw, false);
 	},
 
 	band_pass: function(low, high, open, config) {
