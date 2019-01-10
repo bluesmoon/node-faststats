@@ -310,7 +310,7 @@ Stats.prototype = {
 		if(this._config.sampling)
 			n--;
 		if(this._stddev === null)
-			this._stddev = Math.sqrt((this.length * this.sum_of_squares - this.sum*this.sum)/(this.length*n));
+			this._stddev = Math.sqrt(Math.max(0, this.length * this.sum_of_squares - this.sum*this.sum)/(this.length*n));
 
 		return this._stddev;
 	},
