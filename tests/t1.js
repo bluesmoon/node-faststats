@@ -1,9 +1,9 @@
 var assert = require('assert');
 
 var Stats = require('fast-stats').Stats;
-Array = require('gauss').Vector;
+GaussVector = require('gauss').Vector;
 
-var a = [], b = new Stats();
+var a = new GaussVector(), b = new Stats();
 
 for(var i=0; i<100001; i++) {
 	var n = Math.round(Math.random()*10000);
