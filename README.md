@@ -190,6 +190,14 @@ object as a parameter to the `copy()` method:
 s4 = s3.copy({store_data: false, bucket_precision: 10 });
 ```
 
+### Getting the raw data
+
+The `data` instance member returns the raw numbers stored in the current Stats object.
+
+```javascript
+data = s3.data; // array of numbers
+```
+
 ### Summaries & Averages
 
 The term _Average_ is overloaded in Statistics.  It relates to a summary of a data set, but says nothing about how
