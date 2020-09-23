@@ -581,7 +581,7 @@ Stats.prototype.μ=Stats.prototype.amean;
 
 exports.Stats = Stats;
 
-if(process.argv[1] && process.argv[1].match(__filename)) {
+if(typeof process !== 'undefined' && process.argv[1] && process.argv[1].match(__filename)) {
 	var s = new Stats({store_data:false, buckets: [ 1, 5, 10, 15, 20, 25, 30, 35 ]}).push(1, 2, 3);
 	var l = process.argv.slice(2);
 	if(!l.length) l = [10, 11, 15, 8, 13, 12, 19, 32, 17, 16];
