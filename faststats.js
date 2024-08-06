@@ -181,7 +181,7 @@ Stats.prototype = {
 			else if(tuple[0] > 0 && (this.max === a || this.min === a)) {
 				var i = this.length-1;
 				if(i>=0) {
-					this.max = this.min = this.data[i--];
+					this.max = this.min = this.data[i];
 					while(i-- >= 0) {
 						if(this.max < this.data[i])
 							this.max = this.data[i];
